@@ -132,7 +132,6 @@ There are three steps the user must follow in order to build a new Swift MX mess
     ValidationErrorList errorList = message.validate();
     ```
    
-
 ### Code Samples
 
 In this project you can see code for all the basic manipulation of an MX message, like:
@@ -142,4 +141,64 @@ In this project you can see code for all the basic manipulation of an MX message
 - [Convert an MX from text to xml](src/main/java/com/paymentcomponents/swift/mx/ConvertMX2XML.java)
 
 
+### More features are included in the paid version like
 
+- [CBPR+ messages](https://gist.github.com/apolichronopoulos/9517f3ba4684c97a488173c0432217d9)  
+    In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
+    
+    ##### Parse CBPR+ Message
+    ```java
+    CbprMessage cbprMessage = new CbprMessage(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08()); //Initialize the cbprMessage
+    cbprMessage.parseXml(xml); //Fill the cbprMessage with data from xml
+    
+    //Perform validation in both header and message object using cbprMessage
+    //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
+    ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008);
+    validationErrorList.isEmpty() //should be true
+    
+    String xmlContent = cbprMessage.convertToXML(); //Get the generated xmls for head and document
+     
+    //Extract the header and the core message from cbprMessage object
+    BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)cbprMessage.getAppHdr();
+    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) cbprMessage.getDocument();
+    ```
+    
+    ##### Construct CBPR+ Message
+    ```java
+    //Initialize the header object
+    BusinessApplicationHeader02 businessApplicationHeader = new BusinessApplicationHeader02();
+    
+    //Initialize the message object
+    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08(); 
+  
+    //Construct the CBPR message object      
+    CbprMessage cbprMessage = new CbprMessage(businessApplicationHeader, fiToFICustomerCreditTransfer );
+  
+    //Perform validation in both header and message object using cbprMessage
+    //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
+    ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008); 
+    ```
+  
+    In case you want to enclose the CBPR+ message under another Root Element, use the code below
+    ```java
+    cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPayload
+    ```
+  
+    ##### Supported CBPR+ Message Types  
+        
+    |ISO20022 Message|CbprMsgType ENUM|Library Object class|
+    |---|---|---|
+    |camt.052.001.08|CAMT_052|BankToCustomerAccountReport08|
+    |camt.053.001.08|CAMT_053|BankToCustomerStatement08|
+    |camt.054.001.08|CAMT_054|BankToCustomerDebitCreditNotification08|
+    |camt.057.001.06|CAMT_057|NotificationToReceive06|
+    |camt.060.001.05|CAMT_060|AccountReportingRequest05|
+    |pacs.002.001.10|PACS_002|FIToFIPaymentStatusReport10|
+    |pacs.004.001.09|PACS_004|PaymentReturn09|
+    |pacs.008.001.08|PACS_008|FIToFICustomerCreditTransfer08|
+    |pacs.008.001.08|PACS_008_STP_EU|FIToFICustomerCreditTransfer08|
+    |pacs.009.001.08|PACS_009_CORE|FinancialInstitutionCreditTransfer08|
+    |pacs.009.001.08|PACS_009_COV|FinancialInstitutionCreditTransfer08|
+    |pacs.010.001.03|PACS_010|FinancialInstitutionDirectDebit03|
+    
+  
