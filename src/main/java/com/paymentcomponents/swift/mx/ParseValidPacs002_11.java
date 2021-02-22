@@ -4,6 +4,8 @@ import gr.datamation.mx.Message;
 import gr.datamation.mx.message.pacs.FIToFIPaymentStatusReport11;
 import gr.datamation.validation.error.ValidationErrorList;
 
+import java.io.ByteArrayInputStream;
+
 public class ParseValidPacs002_11 {
 
     public static void main(String... args) {
@@ -17,11 +19,17 @@ public class ParseValidPacs002_11 {
         //11 > the version of the pacs.002.001.VERSION which can be found in xmlns attribute of the xml
         Message messageObject = new FIToFIPaymentStatusReport11();
         try {
+            //Use validateXML() to validate the xml schema of the message
+            ValidationErrorList errorList = messageObject.validateXML(new ByteArrayInputStream(validPacs002String.getBytes()));
+            if(!errorList.isEmpty()) {
+                Utils.printInvalidMessageErrors(errorList);
+                return;
+            }
             //Use parseXML() to fill the messageObject the content of the message
             messageObject.parseXML(validPacs002String);
             //Use validate() to check the messageObject and validate the content
             //It returns a ValidationErrorList which contains any issue found during validation
-            ValidationErrorList errorList = messageObject.validate();
+            errorList = messageObject.validate();
             Utils.printValidMessageOrErrors(messageObject, errorList);
         } catch (Exception e) {
             e.printStackTrace();

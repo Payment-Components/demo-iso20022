@@ -3,6 +3,8 @@ package com.paymentcomponents.swift.mx;
 import gr.datamation.mx.message.pacs.FIToFIPaymentStatusReport11;
 import gr.datamation.validation.error.ValidationErrorList;
 
+import java.io.ByteArrayInputStream;
+
 public class ParseInvalidPacs002_11 {
 
     public static void main(String... args) {
@@ -21,13 +23,19 @@ public class ParseInvalidPacs002_11 {
         //11 > the version of the pacs.002.001.VERSION which can be found in xmlns attribute of the xml
         FIToFIPaymentStatusReport11 messageObject = new FIToFIPaymentStatusReport11();
         try {
+            //Use validateXML() to validate the xml schema of the message
+            ValidationErrorList errorList = messageObject.validateXML(new ByteArrayInputStream(validPacs002String.getBytes()));
+            if(!errorList.isEmpty()) {
+                Utils.printInvalidMessageErrors(errorList);
+                return;
+            }
             //Use parseXML() to fill the messageObject the content of the message
             messageObject.parseXML(validPacs002String);
             //Manually edit a value of the message that makes it invalid
             messageObject.getMessage().getGrpHdr().getInstgAgt().setFinInstnId(null);
             //Use validate() to check the messageObject and validate the content
             //It returns a ValidationErrorList which contains any issue found during validation
-            ValidationErrorList errorList = messageObject.validate();
+            errorList = messageObject.validate();
             Utils.printValidMessageOrErrors(messageObject, errorList);
             /* The following error message should be visible when running this example:
             Message is invalid, and the errors are the following:

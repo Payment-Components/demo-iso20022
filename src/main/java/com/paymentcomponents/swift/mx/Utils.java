@@ -19,15 +19,19 @@ public class Utils {
             System.out.println("Message is valid");
             System.out.println(messageObject.convertToXML());
         } else {
-            System.err.println("Message is invalid, and the errors are the following:");
-            for (ValidationError error : validationErrorList) {
-                System.err.println(error.toString());
-                System.err.println(
-                        "Error Code: " + error.getErrorCode() + "\n" +
-                                "Error Description: " + error.getDescription() + "\n" +
-                                "Line number in error inside the tag: " + error.getLine() + "\n"
-                );
-            }
+            printInvalidMessageErrors(validationErrorList);
+        }
+    }
+
+    public static void printInvalidMessageErrors(ValidationErrorList validationErrorList) {
+        System.err.println("Message is invalid, and the errors are the following:");
+        for (ValidationError error : validationErrorList) {
+            System.err.println(error.toString());
+            System.err.println(
+                    "Error Code: " + error.getErrorCode() + "\n" +
+                            "Error Description: " + error.getDescription() + "\n" +
+                            "Line number in error inside the tag: " + error.getLine() + "\n"
+            );
         }
     }
 

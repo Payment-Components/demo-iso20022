@@ -91,9 +91,14 @@ There are three steps the user must follow in order to build a new Swift MX mess
     ```
     The above command will initialize a class for this message named FIToFIPaymentStatusReport11 which is initially empty.  
     
-    Parsing a file
+    Validating a text
     ```java
-    message.parseAndValidate(new File("/path/to/pacs.002.001.11.xml"));
+    message.validateXML(new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                     "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
+                     "  <FIToFIPmtStsRpt>\n" +
+                     "     ............\n" +
+                     "  </FIToFIPmtStsRpt>\n" +
+                     "</Document>".getBytes()));
    ```
     Parsing a text
     ```java
@@ -149,11 +154,13 @@ In this project you can see code for all the basic manipulation of an MX message
     ##### Parse CBPR+ Message
     ```java
     CbprMessage cbprMessage = new CbprMessage(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08()); //Initialize the cbprMessage
+    ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(xml.getBytes())); //Validate against the XSD
+    validationErrorList.isEmpty(); //should be true
     cbprMessage.parseXml(xml); //Fill the cbprMessage with data from xml
-    
+  
     //Perform validation in both header and message object using cbprMessage
     //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
-    ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008);
+    validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008);
     validationErrorList.isEmpty() //should be true
     
     String xmlContent = cbprMessage.convertToXML(); //Get the generated xmls for head and document
@@ -161,6 +168,16 @@ In this project you can see code for all the basic manipulation of an MX message
     //Extract the header and the core message from cbprMessage object
     BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)cbprMessage.getAppHdr();
     FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) cbprMessage.getDocument();
+    ```
+
+    ###### AutoParse CBPR+ Message
+    ```java
+    CbprMessage cbprMessage = new CbprMessage(); //Initialize the cbprMessage
+    ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(xml.getBytes())); //Validate against the XSD
+    validationErrorList.isEmpty(); //should be true
+    cbprMessage.autoParseXml(xml); //Fill the cbprMessage with data from xml
+    validationErrorList = cbprMessage.autoValidate();
+    validationErrorList.isEmpty(); //should be true
     ```
     
     ##### Construct CBPR+ Message
