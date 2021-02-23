@@ -93,12 +93,12 @@ There are three steps the user must follow in order to build a new Swift MX mess
     
     Validating a text
     ```java
-    message.validateXML(new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                     "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
-                     "  <FIToFIPmtStsRpt>\n" +
-                     "     ............\n" +
-                     "  </FIToFIPmtStsRpt>\n" +
-                     "</Document>".getBytes()));
+    ValidationErrorList errorList = message.validateXML(new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                                                                 "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
+                                                                                 "  <FIToFIPmtStsRpt>\n" +
+                                                                                 "     ............\n" +
+                                                                                 "  </FIToFIPmtStsRpt>\n" +
+                                                                                 "</Document>".getBytes()));
    ```
     Parsing a text
     ```java
@@ -108,6 +108,27 @@ There are three steps the user must follow in order to build a new Swift MX mess
                      "     ............\n" +
                      "  </FIToFIPmtStsRpt>\n" +
                      "</Document>");
+    ```
+
+    ###### Auto parse and validate
+    In case we do not know the class of the message, we can use the auto parse and validate from the xml.
+    Auto validating a text
+    ```java
+    ValidationErrorList errorList = MXUtils.autoValidateXML(new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                                                                     "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
+                                                                                     "  <FIToFIPmtStsRpt>\n" +
+                                                                                     "     ............\n" +
+                                                                                     "  </FIToFIPmtStsRpt>\n" +
+                                                                                     "</Document>".getBytes()));
+    ```
+    Auto parsing a text
+    ```java
+    Message message = MXUtils.autoParseXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                            "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
+                                            "  <FIToFIPmtStsRpt>\n" +
+                                            "     ............\n" +
+                                            "  </FIToFIPmtStsRpt>\n" +
+                                            "</Document>");
     ```
 
 1. ##### Add data to the class.
@@ -148,22 +169,26 @@ In this project you can see code for all the basic manipulation of an MX message
 
 ### More features are included in the paid version like
 
-- [CBPR+ messages](https://gist.github.com/apolichronopoulos/9517f3ba4684c97a488173c0432217d9)  
+- #### [CBPR+ messages](https://gist.github.com/johnmara-pc14/f3d9c99fb9d33452e724eb0ad44a2f6f)  
     In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
     
     ##### Parse CBPR+ Message
     ```java
-    CbprMessage cbprMessage = new CbprMessage(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08()); //Initialize the cbprMessage
-    ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(xml.getBytes())); //Validate against the XSD
-    validationErrorList.isEmpty(); //should be true
-    cbprMessage.parseXml(xml); //Fill the cbprMessage with data from xml
-  
+    //Initialize the cbprMessage
+    CbprMessage cbprMessage = new CbprMessage(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08());
+    //Validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
+    ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
+    //Fill the cbprMessage with data from xml
+    cbprMessage.parseXml(validCbprPacs008String); 
     //Perform validation in both header and message object using cbprMessage
-    //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
-    validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008);
-    validationErrorList.isEmpty() //should be true
-    
-    String xmlContent = cbprMessage.convertToXML(); //Get the generated xmls for head and document
+    //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
+    validationErrorList.addAll(cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008));
+  
+    if (validationErrorList.isEmpty()) {
+        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+    } else {
+        System.out.println(validationErrorList);
+    }
      
     //Extract the header and the core message from cbprMessage object
     BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)cbprMessage.getAppHdr();
@@ -172,28 +197,51 @@ In this project you can see code for all the basic manipulation of an MX message
 
     ###### AutoParse CBPR+ Message
     ```java
-    CbprMessage cbprMessage = new CbprMessage(); //Initialize the cbprMessage
-    ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(xml.getBytes())); //Validate against the XSD
-    validationErrorList.isEmpty(); //should be true
-    cbprMessage.autoParseXml(xml); //Fill the cbprMessage with data from xml
-    validationErrorList = cbprMessage.autoValidate();
-    validationErrorList.isEmpty(); //should be true
+    //Initialize the cbprMessage
+    CbprMessage cbprMessage = new CbprMessage();
+    //Validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
+    ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
+    //Fill the cbprMessage with data from xml
+    cbprMessage.autoParseXml(validCbprPacs008String);
+  
+    //Perform validation in both header and message object using cbprMessage
+    validationErrorList.addAll(cbprMessage.autoValidate());
+  
+    if (validationErrorList.isEmpty()) {
+        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+    } else {
+        System.out.println(validationErrorList);
+    }
     ```
     
     ##### Construct CBPR+ Message
     ```java
     //Initialize the header object
     BusinessApplicationHeader02 businessApplicationHeader = new BusinessApplicationHeader02();
-    
-    //Initialize the message object
-    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08(); 
+    businessApplicationHeader.parseXML(validCbprPacs008HeaderString);
+
+    //Initialize the document object
+    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
+    fiToFICustomerCreditTransfer.parseXML(validCbprPacs008DocumentString);
+  
+    //We fill the elements of the message object using setters
+    fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+    fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+    //or setElement()
+    fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
   
     //Construct the CBPR message object      
-    CbprMessage cbprMessage = new CbprMessage(businessApplicationHeader, fiToFICustomerCreditTransfer );
+    CbprMessage cbprMessage = new CbprMessage(businessApplicationHeader, fiToFICustomerCreditTransfer);
   
     //Perform validation in both header and message object using cbprMessage
     //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
     ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008); 
+  
+    if (validationErrorList.isEmpty()) {
+        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+    } else {
+        System.out.println(validationErrorList);
+    }
     ```
   
     In case you want to enclose the CBPR+ message under another Root Element, use the code below
@@ -217,5 +265,79 @@ In this project you can see code for all the basic manipulation of an MX message
     |pacs.009.001.08|PACS_009_CORE|FinancialInstitutionCreditTransfer08|
     |pacs.009.001.08|PACS_009_COV|FinancialInstitutionCreditTransfer08|
     |pacs.010.001.03|PACS_010|FinancialInstitutionDirectDebit03|
+
+- #### [TARGET2 messages](https://gist.github.com/johnmara-pc14/e3070cdacac9c367ff0f440a460ce517)  
+  In case you need to handle TARGET2 messages, then you need to handle objects that extend the ISO20022 classes.
+
+  ##### Parse TARGET2 Message
+    ```java
+    //Initialize the message object
+    FIToFICustomerCreditTransfer08Rtgs fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08Rtgs();
+    //Validate against the xml schema. We can also exit in case of errors in this step.
+    ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validateXML(new ByteArrayInputStream(validRtgsPacs008String.getBytes()));
+    //Fill the message with data from xml
+    fiToFICustomerCreditTransfer.parseXML(validRtgsPacs008String);
+    //Validate both the xml schema and rules
+    validationErrorList.addAll(fiToFICustomerCreditTransfer.validate());  
+  
+    if (validationErrorList.isEmpty()) {
+        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+    } else {
+        System.out.println(validationErrorList);
+    }
+    ```
+
+  ###### AutoParse TARGET2 Message
+    ```java
+    //Validate against the xml schema without knowing the message type. We can also exit in case of errors in this step.
+    ValidationErrorList validationErrorList = RtgsUtils.autoValidateXML(new ByteArrayInputStream(validRtgsPacs008String.getBytes()));
+    //Fill the message with data from xml without knowing the message type
+    Message message = RtgsUtils.autoParseXML(validRtgsPacs008String);
+    //Validate both the xml schema and rules
+    validationErrorList.addAll(message.validate());
+  
+    if (validationErrorList.isEmpty()) {
+        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+    } else {
+        System.out.println(validationErrorList);
+    }
+    ```
+
+  ##### Construct TARGET2 Message
+    ```java
+    //Initialize the message object
+    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
     
+    //We fill the elements of the message object using setters
+    fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+    fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+    //or setElement()
+    fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
+    
+    //Perform validation
+    ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validate(); 
+  
+    if (validationErrorList.isEmpty()) {
+        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+    } else {
+        System.out.println(validationErrorList);
+    }
+    ```
+
+  ##### Supported TARGET2 Message Types
+
+  |ISO20022 Message|Library Object class|
+  |---|---|
+  |admi.007.001.01|ReceiptAcknowledgement01Rtgs|
+  |camt.025.001.05|Receipt05Rtgs|
+  |camt.029.001.09|ResolutionOfInvestigation09Rtgs|
+  |camt.050.001.05|LiquidityCreditTransfer05Rtgs|
+  |camt.053.001.08|BankToCustomerStatement08Rtgs|
+  |camt.054.001.08|BankToCustomerDebitCreditNotification08Rtgs|
+  |camt.056.001.08|FIToFIPaymentCancellationRequest08Rtgs|
+  |pacs.002.001.10|FIToFIPaymentStatusReport10Rtgs|
+  |pacs.004.001.09|PaymentReturn09Rtgs|
+  |pacs.008.001.08|FIToFICustomerCreditTransfer08Rtgs|
+  |pacs.009.001.08|FinancialInstitutionCreditTransfer08Rtgs|
+  |pacs.010.001.03|FinancialInstitutionDirectDebit03Rtgs|
   
