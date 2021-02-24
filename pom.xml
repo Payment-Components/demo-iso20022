@@ -19,8 +19,22 @@
         <dependency>
             <groupId>gr.datamation.mx</groupId>
             <artifactId>mx</artifactId>
-            <version>20.7.0</version>
+            <version>${mx.version}</version>
             <classifier>demo</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>gr.datamation.mx</groupId>
+            <artifactId>mx</artifactId>
+            <version>${mx.version}</version>
+            <classifier>demo-rtgs</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>gr.datamation.mx</groupId>
+            <artifactId>mx</artifactId>
+            <version>${mx.version}</version>
+            <classifier>demo-cbpr</classifier>
         </dependency>
 
         <dependency>
@@ -47,6 +61,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <mx.version>20.13.0</mx.version>
     </properties>
 
 </project>

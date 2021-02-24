@@ -6,7 +6,7 @@ SWIFT MX (ISO20022) Messages Validation works. For our demonstration we are goin
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/20.7.0/mx-20.7.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/20.13.0/mx-20.13.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,8 +24,22 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>20.7.0</version>
+    <version>20.13.0</version>
     <classifier>demo</classifier>
+</dependency>
+<!-- Import the CBPR+ demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>20.13.0</version>
+    <classifier>demo-cbpr</classifier>
+</dependency>
+<!--Import the TARGET2 (RTGS) demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>20.13.0</version>
+    <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 
@@ -40,7 +54,9 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:20.7.0:demo@jar'
+implementation 'gr.datamation.mx:mx:20.13.0:demo@jar'
+implementation 'gr.datamation.mx:mx:20.13.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:20.13.0:demo-rtgs@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -165,11 +181,13 @@ In this project you can see code for all the basic manipulation of an MX message
 - [Parse an invalid pacs.002](src/main/java/com/paymentcomponents/swift/mx/ParseInvalidPacs002_11.java) and get the syntax and network validations errors
 - [Build a valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/BuildValidPacs002_11.java)
 - [Convert an MX from text to xml](src/main/java/com/paymentcomponents/swift/mx/ConvertMX2XML.java)
+- [Parse and validate CBPR+ message](src/main/java/com/paymentcomponents/swift/mx/cbpr/ParseAndValidateCbprMessage.java)
+- [Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/rtgs/ParseAndValidateRtgsMessage.java)
 
 
 ### More features are included in the paid version like
 
-- #### [CBPR+ messages](https://gist.github.com/johnmara-pc14/f3d9c99fb9d33452e724eb0ad44a2f6f)  
+- #### CBPR+ messages  
     In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
     
     ##### Parse CBPR+ Message
@@ -266,8 +284,8 @@ In this project you can see code for all the basic manipulation of an MX message
     |pacs.009.001.08|PACS_009_COV|FinancialInstitutionCreditTransfer08|
     |pacs.010.001.03|PACS_010|FinancialInstitutionDirectDebit03|
 
-- #### [TARGET2 messages](https://gist.github.com/johnmara-pc14/e3070cdacac9c367ff0f440a460ce517)  
-  In case you need to handle TARGET2 messages, then you need to handle objects that extend the ISO20022 classes.
+- #### TARGET2 (RTGS) messages  
+  In case you need to handle TARGET2 (RTGS) messages, then you need to handle objects that extend the ISO20022 classes.
 
   ##### Parse TARGET2 Message
     ```java
