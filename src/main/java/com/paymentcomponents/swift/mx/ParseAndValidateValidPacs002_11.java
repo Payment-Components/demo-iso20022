@@ -6,7 +6,7 @@ import gr.datamation.validation.error.ValidationErrorList;
 
 import java.io.ByteArrayInputStream;
 
-public class ParseValidPacs002_11 {
+public class ParseAndValidateValidPacs002_11 {
 
     public static void main(String... args) {
         execute();
