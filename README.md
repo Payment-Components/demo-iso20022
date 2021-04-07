@@ -1,7 +1,7 @@
 # ISO20022 Message Validator Demo
 
-The project is here to demonstrate how our [SDK](https://www.paymentcomponents.com/messaging-libraries/) for 
-SWIFT MX (ISO20022) Messages Validation works. For our demonstration we are going to use the demo SDK which can parse/validate/generate a pacs.002.001.XX message. 
+This project is part of the [FINaplo](https://finaplo.paymentcomponents.com) product and is here to demonstrate how our [SDK](https://finaplo.paymentcomponents.com/financial-messages) for SWIFT MX (ISO20022) Messages Validation works. 
+For our demonstration we are going to use the demo SDK which can parse/validate/generate a pacs.002.001.XX message. 
 
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
