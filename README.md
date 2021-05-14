@@ -269,25 +269,25 @@ In this project you can see code for all the basic manipulation of an MX message
   
     ##### Supported CBPR+ Message Types  
         
-    |ISO20022 Message|CbprMsgType ENUM|Library Object class|
-    |---|---|---|
-    |camt.029.001.09|CAMT_029|ResolutionOfInvestigation09|
-    |camt.052.001.08|CAMT_052|BankToCustomerAccountReport08|
-    |camt.053.001.08|CAMT_053|BankToCustomerStatement08|
-    |camt.054.001.08|CAMT_054|BankToCustomerDebitCreditNotification08|
-    |camt.056.001.08|CAMT_056|FIToFIPaymentCancellationRequest08|
-    |camt.057.001.06|CAMT_057|NotificationToReceive06|
-    |camt.060.001.05|CAMT_060|AccountReportingRequest05|
-    |pacs.002.001.10|PACS_002|FIToFIPaymentStatusReport10|
-    |pacs.004.001.09|PACS_004|PaymentReturn09|
-    |pacs.008.001.08|PACS_008|FIToFICustomerCreditTransfer08|
-    |pacs.008.001.08|PACS_008_STP|FIToFICustomerCreditTransfer08|
-    |pacs.009.001.08|PACS_009_CORE|FinancialInstitutionCreditTransfer08|
-    |pacs.009.001.08|PACS_009_COV|FinancialInstitutionCreditTransfer08|
-    |pacs.009.001.08|PACS_009_ADV|FinancialInstitutionCreditTransfer08|
-    |pacs.010.001.03|PACS_010|FinancialInstitutionDirectDebit03|
-    |pain.001.001.09|PAIN_001|CustomerCreditTransferInitiation09|
-    |pain.002.001.10|PAIN_002|CustomerPaymentStatusReport10|
+    | ISO20022 Message | CbprMsgType ENUM | Library Object class                    |
+    | ---------------- | ---------------- | --------------------                    |
+    | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |
+    | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |
+    | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |
+    | camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08 |
+    | camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08      |
+    | camt.057.001.06  | CAMT_057         | NotificationToReceive06                 |
+    | camt.060.001.05  | CAMT_060         | AccountReportingRequest05               |
+    | pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10             |
+    | pacs.004.001.09  | PACS_004         | PaymentReturn09                         |
+    | pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |
+    | pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |
+    | pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    |
+    | pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |
+    | pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |
+    | pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |
+    | pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |
+    | pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |
 
 - #### TARGET2 (RTGS) messages  
   In case you need to handle TARGET2 (RTGS) messages, then you need to handle objects that extend the ISO20022 classes.
@@ -349,18 +349,18 @@ In this project you can see code for all the basic manipulation of an MX message
 
   ##### Supported TARGET2 Message Types
 
-  |ISO20022 Message|Library Object class|
-  |---|---|
-  |admi.007.001.01|ReceiptAcknowledgement01Rtgs|
-  |camt.025.001.05|Receipt05Rtgs|
-  |camt.029.001.09|ResolutionOfInvestigation09Rtgs|
-  |camt.050.001.05|LiquidityCreditTransfer05Rtgs|
-  |camt.053.001.08|BankToCustomerStatement08Rtgs|
-  |camt.054.001.08|BankToCustomerDebitCreditNotification08Rtgs|
-  |camt.056.001.08|FIToFIPaymentCancellationRequest08Rtgs|
-  |pacs.002.001.10|FIToFIPaymentStatusReport10Rtgs|
-  |pacs.004.001.09|PaymentReturn09Rtgs|
-  |pacs.008.001.08|FIToFICustomerCreditTransfer08Rtgs|
-  |pacs.009.001.08|FinancialInstitutionCreditTransfer08Rtgs|
-  |pacs.010.001.03|FinancialInstitutionDirectDebit03Rtgs|
+  | ISO20022 Message|Library Object class                         |
+  | --------------- |-------------------                          |
+  | admi.007.001.01 | ReceiptAcknowledgement01Rtgs                |
+  | camt.025.001.05 | Receipt05Rtgs                               |
+  | camt.029.001.09 | ResolutionOfInvestigation09Rtgs             |
+  | camt.050.001.05 | LiquidityCreditTransfer05Rtgs               |
+  | camt.053.001.08 | BankToCustomerStatement08Rtgs               |
+  | camt.054.001.08 | BankToCustomerDebitCreditNotification08Rtgs |
+  | camt.056.001.08 | FIToFIPaymentCancellationRequest08Rtgs      |
+  | pacs.002.001.10 | FIToFIPaymentStatusReport10Rtgs             |
+  | pacs.004.001.09 | PaymentReturn09Rtgs                         |
+  | pacs.008.001.08 | FIToFICustomerCreditTransfer08Rtgs          |
+  | pacs.009.001.08 | FinancialInstitutionCreditTransfer08Rtgs    |
+  | pacs.010.001.03 | FinancialInstitutionDirectDebit03Rtgs       |
   
