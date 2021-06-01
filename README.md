@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/20.14.1/mx-20.14.1-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/20.15.1/mx-20.15.1-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,21 +24,21 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>20.14.1</version>
+    <version>20.15.1</version>
     <classifier>demo</classifier>
 </dependency>
 <!-- Import the CBPR+ demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>20.14.1</version>
+    <version>20.15.1</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 <!--Import the TARGET2 (RTGS) demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>20.14.1</version>
+    <version>20.15.1</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
@@ -54,9 +54,9 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:20.14.1:demo@jar'
-implementation 'gr.datamation.mx:mx:20.14.1:demo-cbpr@jar'
-implementation 'gr.datamation.mx:mx:20.14.1:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:20.15.1:demo@jar'
+implementation 'gr.datamation.mx:mx:20.15.1:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:20.15.1:demo-rtgs@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -269,25 +269,25 @@ In this project you can see code for all the basic manipulation of an MX message
   
     ##### Supported CBPR+ Message Types  
         
-    | ISO20022 Message | CbprMsgType ENUM | Library Object class                    |
-    | ---------------- | ---------------- | --------------------                    |
-    | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |
-    | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |
-    | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |
-    | camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08 |
-    | camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08      |
-    | camt.057.001.06  | CAMT_057         | NotificationToReceive06                 |
-    | camt.060.001.05  | CAMT_060         | AccountReportingRequest05               |
-    | pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10             |
-    | pacs.004.001.09  | PACS_004         | PaymentReturn09                         |
-    | pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |
-    | pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |
-    | pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    |
-    | pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |
-    | pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |
-    | pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |
-    | pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |
-    | pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |
+    | ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
+    | ---------------- | ---------------- | --------------------                    | :---------------: |
+    | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |                   |
+    | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |                   |
+    | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |                   |
+    | camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08 |                   |
+    | camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08      |                   |
+    | camt.057.001.06  | CAMT_057         | NotificationToReceive06                 |                   |
+    | camt.060.001.05  | CAMT_060         | AccountReportingRequest05               |                   |
+    | pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10             |                   |
+    | pacs.004.001.09  | PACS_004         | PaymentReturn09                         |                   |
+    | pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |                   |
+    | pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |                   |
+    | pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    | &check;           |
+    | pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |                   |
+    | pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |                   |
+    | pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |                   |
+    | pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |                   |
+    | pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |                   |
 
 - #### TARGET2 (RTGS) messages  
   In case you need to handle TARGET2 (RTGS) messages, then you need to handle objects that extend the ISO20022 classes.
@@ -349,18 +349,18 @@ In this project you can see code for all the basic manipulation of an MX message
 
   ##### Supported TARGET2 Message Types
 
-  | ISO20022 Message|Library Object class                         |
-  | --------------- |-------------------                          |
-  | admi.007.001.01 | ReceiptAcknowledgement01Rtgs                |
-  | camt.025.001.05 | Receipt05Rtgs                               |
-  | camt.029.001.09 | ResolutionOfInvestigation09Rtgs             |
-  | camt.050.001.05 | LiquidityCreditTransfer05Rtgs               |
-  | camt.053.001.08 | BankToCustomerStatement08Rtgs               |
-  | camt.054.001.08 | BankToCustomerDebitCreditNotification08Rtgs |
-  | camt.056.001.08 | FIToFIPaymentCancellationRequest08Rtgs      |
-  | pacs.002.001.10 | FIToFIPaymentStatusReport10Rtgs             |
-  | pacs.004.001.09 | PaymentReturn09Rtgs                         |
-  | pacs.008.001.08 | FIToFICustomerCreditTransfer08Rtgs          |
-  | pacs.009.001.08 | FinancialInstitutionCreditTransfer08Rtgs    |
-  | pacs.010.001.03 | FinancialInstitutionDirectDebit03Rtgs       |
+  | ISO20022 Message|Library Object class                         | Available in Demo |
+  | --------------- |-------------------                          | :---------------: |
+  | admi.007.001.01 | ReceiptAcknowledgement01Rtgs                |                   |
+  | camt.025.001.05 | Receipt05Rtgs                               |                   |
+  | camt.029.001.09 | ResolutionOfInvestigation09Rtgs             |                   |
+  | camt.050.001.05 | LiquidityCreditTransfer05Rtgs               |                   |
+  | camt.053.001.08 | BankToCustomerStatement08Rtgs               |                   |
+  | camt.054.001.08 | BankToCustomerDebitCreditNotification08Rtgs |                   |
+  | camt.056.001.08 | FIToFIPaymentCancellationRequest08Rtgs      |                   |
+  | pacs.002.001.10 | FIToFIPaymentStatusReport10Rtgs             |                   |
+  | pacs.004.001.09 | PaymentReturn09Rtgs                         |                   |
+  | pacs.008.001.08 | FIToFICustomerCreditTransfer08Rtgs          |                   |
+  | pacs.009.001.08 | FinancialInstitutionCreditTransfer08Rtgs    | &check;           |
+  | pacs.010.001.03 | FinancialInstitutionDirectDebit03Rtgs       |                   |
   
