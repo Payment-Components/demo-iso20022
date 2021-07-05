@@ -1,11 +1,11 @@
 package com.paymentcomponents.swift.mx;
 
-import gr.datamation.mx.message.pacs.FIToFIPaymentStatusReport11;
+import gr.datamation.mx.message.pacs.FIToFIPaymentStatusReport12;
 import gr.datamation.validation.error.ValidationErrorList;
 
 import java.io.ByteArrayInputStream;
 
-public class ParseAndValidateInvalidPacs002_11 {
+public class ParseAndValidateInvalidPacs002_12 {
 
     public static void main(String... args) {
         execute();
@@ -18,14 +18,14 @@ public class ParseAndValidateInvalidPacs002_11 {
 
     public static void makeValidPacs002Invalid() {
         //You have to initiate the message object using the suitable constructor.
-        //In order to parse and validate a pacs.002.001.11 you need to use FIToFIPaymentStatusReport11
+        //In order to parse and validate a pacs.002.001.12 you need to use FIToFIPaymentStatusReport12
         //FIToFIPaymentStatusReport > matches the xml element <FIToFIPmtStsRpt>
-        //11 > the version of the pacs.002.001.VERSION which can be found in xmlns attribute of the xml
-        FIToFIPaymentStatusReport11 messageObject = new FIToFIPaymentStatusReport11();
+        //12 > the version of the pacs.002.001.VERSION which can be found in xmlns attribute of the xml
+        FIToFIPaymentStatusReport12 messageObject = new FIToFIPaymentStatusReport12();
         try {
             //Use validateXML() to validate the xml schema of the message
             ValidationErrorList errorList = messageObject.validateXML(new ByteArrayInputStream(validPacs002String.getBytes()));
-            if(!errorList.isEmpty()) {
+            if (!errorList.isEmpty()) {
                 Utils.printInvalidMessageErrors(errorList);
                 return;
             }
@@ -39,9 +39,9 @@ public class ParseAndValidateInvalidPacs002_11 {
             Utils.printValidMessageOrErrors(messageObject, errorList);
             /* The following error message should be visible when running this example:
             Message is invalid, and the errors are the following:
-            ERROR null cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11":FinInstnId}' is expected. null (null)
+            ERROR null cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.12":FinInstnId}' is expected. null (null)
             Error Code: null
-            Error Description: cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11":FinInstnId}' is expected.
+            Error Description: cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.12":FinInstnId}' is expected.
             Line number in error inside the tag: 0
              */
         } catch (Exception e) {
@@ -52,10 +52,10 @@ public class ParseAndValidateInvalidPacs002_11 {
 
     public static void parseInvalidPacs002() {
         //You have to initiate the message object using the suitable constructor.
-        //In order to parse and validate a pacs.002.001.11 you need to use FIToFIPaymentStatusReport11
+        //In order to parse and validate a pacs.002.001.12 you need to use FIToFIPaymentStatusReport12
         //FIToFIPaymentStatusReport > matches the xml element <FIToFIPmtStsRpt>
-        //11 > the version of the pacs.002.001.VERSION which can be found in xmlns attribute of the xml
-        FIToFIPaymentStatusReport11 messageObject = new FIToFIPaymentStatusReport11();
+        //12 > the version of the pacs.002.001.VERSION which can be found in xmlns attribute of the xml
+        FIToFIPaymentStatusReport12 messageObject = new FIToFIPaymentStatusReport12();
         try {
             //Use parseXML() to fill the messageObject the content of the message
             messageObject.parseXML(invalidPacs002String);
@@ -65,9 +65,9 @@ public class ParseAndValidateInvalidPacs002_11 {
             Utils.printValidMessageOrErrors(messageObject, errorList);
             /* The following error message should be visible when running this example:
             Message is invalid, and the errors are the following:
-            ERROR null cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11":FinInstnId}' is expected. null (null)
+            ERROR null cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.12":FinInstnId}' is expected. null (null)
             Error Code: null
-            Error Description: cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11":FinInstnId}' is expected.
+            Error Description: cvc-complex-type.2.4.b: The content of element 'InstgAgt' is not complete. One of '{"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.12":FinInstnId}' is expected.
             Line number in error inside the tag: 0
              */
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class ParseAndValidateInvalidPacs002_11 {
     }
 
     private static final String validPacs002String = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
+            "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.12\">\n" +
             "  <FIToFIPmtStsRpt>\n" +
             "    <GrpHdr>\n" +
             "      <MsgId>ABABUS23-STATUS-456/04</MsgId>\n" +
@@ -154,7 +154,7 @@ public class ParseAndValidateInvalidPacs002_11 {
             "</Document>\n";
 
     private static final String invalidPacs002String = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.11\">\n" +
+            "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.002.001.12\">\n" +
             "  <FIToFIPmtStsRpt>\n" +
             "    <GrpHdr>\n" +
             "      <MsgId>ABABUS23-STATUS-456/04</MsgId>\n" +

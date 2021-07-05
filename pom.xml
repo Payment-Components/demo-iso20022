@@ -61,7 +61,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <mx.version>20.16.0</mx.version>
+        <mx.version>21.0.0</mx.version>
     </properties>
 
 </project>
