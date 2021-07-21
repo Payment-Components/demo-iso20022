@@ -43,13 +43,6 @@
             <version>4.12</version>
         </dependency>
 
-        <!-- Use groovy-all dependency for cbpr+ -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>2.4.8</version>
-        </dependency>
-
         <!-- Use jaxb2-maven-plugin when using java 1.9 or above -->
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
@@ -61,7 +54,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <mx.version>21.1.0</mx.version>
+        <mx.version>21.1.1</mx.version>
     </properties>
 
 </project>
