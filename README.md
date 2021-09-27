@@ -177,9 +177,9 @@ There are three steps the user must follow in order to build a new Swift MX mess
 ### Code Samples
 
 In this project you can see code for all the basic manipulation of an MX message, like:
-- [Parse and validate valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/ParseAndValidateValidPacs002_11.java)
-- [Parse and validate an invalid pacs.002 (get syntax, network validation errors)](src/main/java/com/paymentcomponents/swift/mx/ParseAndValidateInvalidPacs002_11.java)
-- [Build a valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/BuildValidPacs002_11.java)
+- [Parse and validate valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/ParseAndValidateValidPacs002_12.java)
+- [Parse and validate an invalid pacs.002 (get syntax, network validation errors)](src/main/java/com/paymentcomponents/swift/mx/ParseAndValidateInvalidPacs002_12.java)
+- [Build a valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/BuildValidPacs002_12.java)
 - [Convert an MX message to XML](src/main/java/com/paymentcomponents/swift/mx/ConvertMX2XML.java)
 - [Parse and validate CBPR+ message](src/main/java/com/paymentcomponents/swift/mx/cbpr/ParseAndValidateCbprMessage.java)
 - [Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/rtgs/ParseAndValidateRtgsMessage.java)
