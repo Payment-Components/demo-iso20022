@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.4.0/mx-21.4.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.5.0/mx-21.5.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,21 +24,21 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.4.0</version>
+    <version>21.5.0</version>
     <classifier>demo</classifier>
 </dependency>
 <!-- Import the CBPR+ demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.4.0</version>
+    <version>21.5.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 <!--Import the TARGET2 (RTGS) demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.4.0</version>
+    <version>21.5.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
@@ -54,9 +54,9 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:21.4.0:demo@jar'
-implementation 'gr.datamation.mx:mx:21.4.0:demo-cbpr@jar'
-implementation 'gr.datamation.mx:mx:21.4.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:21.5.0:demo@jar'
+implementation 'gr.datamation.mx:mx:21.5.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:21.5.0:demo-rtgs@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -147,7 +147,7 @@ There are three steps the user must follow in order to build a new Swift MX mess
                                             "</Document>");
     ```
 
-1. ##### Add data to the class.
+2. ##### Add data to the class.
     The next step is to add data to the new message. In order to add some data to the message, user must know which element in the message tree he wants to add. 
     The element he wants to add is identified by an XML path. The value of the element user wants to add may be a String, a Boolean or a complex type that is described in the SWIFT MX type catalog.
     
@@ -161,7 +161,7 @@ There are three steps the user must follow in order to build a new Swift MX mess
     message.getMessage().setGrpHdr(new GroupHeader91()); // setGrpHdr() method accepts iso.pacs_002_001_11.GroupHeader91 objects
     ```
     
-1. ##### Validate the message.
+3. ##### Validate the message.
     After building a Swift MX message using the appropriate class, user may want to validate this message. Of course validation is not mandatory but is the only way to prove that the message is correct. 
     Validation is performed by calling the validate() method and internally is a two step process:
     - Validation against the schema of the message in order to ensure that the message is a well-formed instance of it.  
@@ -174,6 +174,53 @@ There are three steps the user must follow in order to build a new Swift MX mess
     ValidationErrorList errorList = message.validate();
     ```
    
+#### Resolve Paths
+For each message object we can call the `resolvePaths()` method on the object.  
+This method returns the xml as paths, from root element to the leaf.  
+It returns a List and each element of the List is a String array consisted of 3 elements:
+1. Field Path excluding the leaf code
+2. Leaf code
+3. Leaf value
+
+For example if we call the `resolvePaths()` on a `pacs.002.001.12`
+```java
+FIToFIPaymentStatusReport12 pacs002 = new FIToFIPaymentStatusReport12();
+//fill the message object or parse from an xml
+List<String[]> paths = pacs002.resolvePaths();
+for (String[] path: paths)
+    System.out.println("Field path: " + path[0] + " | " + "Field code: " + path[1] +  " | " + "Field value: " + path[2])
+```
+part of the output we will receive is
+```
+Field path: /Document/FIToFIPmtStsRpt/GrpHdr | Field code: MsgId | Field value: ABABUS23-STATUS-456/04
+Field path: /Document/FIToFIPmtStsRpt/GrpHdr | Field code: CreDtTm | Field value: 2015-06-29T09:56:00
+Field path: /Document/FIToFIPmtStsRpt/OrgnlGrpInfAndSts | Field code: OrgnlMsgId | Field value: AAAA100628-123v
+Field path: /Document/FIToFIPmtStsRpt/OrgnlGrpInfAndSts | Field code: OrgnlMsgNmId | Field value: pacs.003.001.09
+Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: OrgnlEndToEndId | Field value: VA060327/0123
+Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: OrgnlTxId | Field value: AAAAUS29/100628/ad458
+Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: TxSts | Field value: RJCT
+```
+In case the child of an xml element is an array, we will receive an index of the element.  
+In our case, if pacs.002 had more than one `FIToFIPmtStsRpt`, the path would have an index. E.g.
+```
+/Document/FIToFIPmtStsRpt[0]/TxInfAndSts
+/Document/FIToFIPmtStsRpt[1]/TxInfAndSts
+```
+
+#### Get Element
+For each message object we can call the `getElement()` method on the object.  
+This method receives a field path until leaf and returns the field value. The value could be a simple String or a complex Object.  
+For example we can call the below in a pacs.002 message
+```java
+pacs002.getElement("TxInfAndSts[0]/TxSts");
+```
+the output will be a `"RJCT"` String. If we call
+```java
+pacs002.getElement("TxInfAndSts[0]");
+```
+the output will be a `PaymentTransaction130` Object.  
+The use of index is necessary in case the element is an array.
+
 ### Code Samples
 
 In this project you can see code for all the basic manipulation of an MX message, like:
@@ -186,6 +233,55 @@ In this project you can see code for all the basic manipulation of an MX message
 
 
 ### More features are included in the paid version like
+
+- #### Auto Replies
+    The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
+    The correspondent class belong to `gr.datamation.replies` package and extendσ the `CoreMessageAutoReplies` abstract Class.  
+    This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
+    `MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
+    For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
+    We initiate these class with the source message.  
+    For a `pacs.008.001.10`, the initialization should be:
+    ```java
+    FIToFICustomerCreditTransfer10 pacs008 = new FIToFICustomerCreditTransfer10();
+    //fill the message object or parse from an xml
+    FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer10, PaymentReturn11> pacs008Replies = 
+        new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
+    ```
+    If we want to create a `pacs.004.001.11` reply for this pacs.008, we should call the `autoReply()` like this:
+    ```java
+    MsgReplyInfo msgReplyInfo = new MsgReplyInfo();
+    ReasonInformation reasonInformation = new ReasonInformation();
+    msgReplyInfo.setRsnInf(reasonInformation);
+  
+    reasonInformation.setType(ReasonInformation.Type.CD);
+    reasonInformation.setValue("AC01");
+    reasonInformation.setAddtlInf(Collections.singletonList("Additional info"));
+  
+    msgReplyInfo.setOrgnlInstrId("instrId");
+    msgReplyInfo.setReplyId("pacs008Reply");
+    msgReplyInfo.setIntrBkSttlmDt(new Date());
+    msgReplyInfo.setCharges(new BigDecimal("2.00"));
+    
+    PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
+    ```
+    
+    ##### RTGS
+    Target2 RTGS, supports the following replies:  
+
+    | Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                             | 
+    | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | --------------------------------------------- |
+    | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferAutoReplies       |
+    | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferAutoReplies       |
+    | pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08Rtgs       | ResolutionOfInvestigation09Rtgs        | FIToFICustomerCreditTransferAutoReplies       |
+    | &nbsp;          | &nbsp;          | &nbsp;                                   | &nbsp;                                 | &nbsp;                                        |
+    | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferAutoReplies |
+    | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08Rtgs | FIToFIPaymentCancellationRequest08Rtgs | FinancialInstitutionCreditTransferAutoReplies |
+    | pacs.009.001.08 | camt.029.001.09 | FinancialInstitutionCreditTransfer08Rtgs | ResolutionOfInvestigation09Rtgs        | FinancialInstitutionCreditTransferAutoReplies |
+    
+    In order to generate Target2(RTGS) specific auto-replies, you should call `autoReplyRtgs()` method.
+    Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/664a90fcff8d6a998d348b39b4a896b3).
+    Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).
 
 - #### CBPR+ messages  
     In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
