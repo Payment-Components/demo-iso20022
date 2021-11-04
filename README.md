@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.5.0/mx-21.5.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.6.0/mx-21.6.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,21 +24,21 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.5.0</version>
+    <version>21.6.0</version>
     <classifier>demo</classifier>
 </dependency>
 <!-- Import the CBPR+ demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.5.0</version>
+    <version>21.6.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 <!--Import the TARGET2 (RTGS) demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.5.0</version>
+    <version>21.6.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
@@ -54,9 +54,9 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:21.5.0:demo@jar'
-implementation 'gr.datamation.mx:mx:21.5.0:demo-cbpr@jar'
-implementation 'gr.datamation.mx:mx:21.5.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:21.6.0:demo@jar'
+implementation 'gr.datamation.mx:mx:21.6.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:21.6.0:demo-rtgs@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -271,15 +271,14 @@ In this project you can see code for all the basic manipulation of an MX message
 
     | Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                             | 
     | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | --------------------------------------------- |
-    | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferAutoReplies       |
-    | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferAutoReplies       |
-    | pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08Rtgs       | ResolutionOfInvestigation09Rtgs        | FIToFICustomerCreditTransferAutoReplies       |
+    | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferRtgsAutoReplies       |
+    | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferRtgsAutoReplies       |
+    | pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08Rtgs       | ResolutionOfInvestigation09Rtgs        | FIToFICustomerCreditTransferRtgsAutoReplies       |
     | &nbsp;          | &nbsp;          | &nbsp;                                   | &nbsp;                                 | &nbsp;                                        |
-    | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferAutoReplies |
-    | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08Rtgs | FIToFIPaymentCancellationRequest08Rtgs | FinancialInstitutionCreditTransferAutoReplies |
-    | pacs.009.001.08 | camt.029.001.09 | FinancialInstitutionCreditTransfer08Rtgs | ResolutionOfInvestigation09Rtgs        | FinancialInstitutionCreditTransferAutoReplies |
+    | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferRtgsAutoReplies |
+    | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08Rtgs | FIToFIPaymentCancellationRequest08Rtgs | FinancialInstitutionCreditTransferRtgsAutoReplies |
+    | pacs.009.001.08 | camt.029.001.09 | FinancialInstitutionCreditTransfer08Rtgs | ResolutionOfInvestigation09Rtgs        | FinancialInstitutionCreditTransferRtgsAutoReplies |
     
-    In order to generate Target2(RTGS) specific auto-replies, you should call `autoReplyRtgs()` method.
     Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/664a90fcff8d6a998d348b39b4a896b3).
     Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).
 
@@ -289,7 +288,7 @@ In this project you can see code for all the basic manipulation of an MX message
     ##### Parse CBPR+ Message
     ```java
     //Initialize the cbprMessage
-    CbprMessage cbprMessage = new CbprMessage(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08());
+    CbprMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> cbprMessage = new CbprMessage<>(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08());
     //Validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
     ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
     //Fill the cbprMessage with data from xml
@@ -312,7 +311,7 @@ In this project you can see code for all the basic manipulation of an MX message
     ###### AutoParse CBPR+ Message
     ```java
     //Initialize the cbprMessage
-    CbprMessage cbprMessage = new CbprMessage();
+    CbprMessage<?, ?> cbprMessage = new CbprMessage<>();
     //Validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
     ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
     //Fill the cbprMessage with data from xml
@@ -345,7 +344,7 @@ In this project you can see code for all the basic manipulation of an MX message
     fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
   
     //Construct the CBPR message object      
-    CbprMessage cbprMessage = new CbprMessage(businessApplicationHeader, fiToFICustomerCreditTransfer);
+    CbprMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> cbprMessage = new CbprMessage<>(businessApplicationHeader, fiToFICustomerCreditTransfer);
   
     //Perform validation in both header and message object using cbprMessage
     //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)

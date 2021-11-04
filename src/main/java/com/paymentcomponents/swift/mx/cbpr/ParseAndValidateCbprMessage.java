@@ -38,7 +38,7 @@ public class ParseAndValidateCbprMessage {
             //financialInstitutionCreditTransfer08.setElement("GrpHdr/MsgId", "1234");
 
             //Construct the CBPR message object using two separate objects, header, document
-            CbprMessage cbprMessage = new CbprMessage(businessApplicationHeader, financialInstitutionCreditTransfer08);
+            CbprMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> cbprMessage = new CbprMessage<>(businessApplicationHeader, financialInstitutionCreditTransfer08);
 
             //Perform validation in both header and message object using cbprMessage
             //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
@@ -59,7 +59,7 @@ public class ParseAndValidateCbprMessage {
     public static void parseAndValidateCBPRMessage() {
         try {
             //Initialize the cbprMessage
-            CbprMessage cbprMessage = new CbprMessage(new BusinessApplicationHeader02(), new FinancialInstitutionCreditTransfer08());
+            CbprMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> cbprMessage = new CbprMessage<>(new BusinessApplicationHeader02(), new FinancialInstitutionCreditTransfer08());
             //Validate CBPR+ against the xml schema
             ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs009String.getBytes()));
             if (!validationErrorList.isEmpty()) {
@@ -80,8 +80,8 @@ public class ParseAndValidateCbprMessage {
             }
 
             //Extract the header and the core message from cbprMessage object
-            BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02) cbprMessage.getAppHdr();
-            FinancialInstitutionCreditTransfer08 financialInstitutionCreditTransfer08 = (FinancialInstitutionCreditTransfer08) cbprMessage.getDocument();
+            BusinessApplicationHeader02 businessApplicationHeader = cbprMessage.getAppHdr();
+            FinancialInstitutionCreditTransfer08 financialInstitutionCreditTransfer08 = cbprMessage.getDocument();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class ParseAndValidateCbprMessage {
     public static void autoParseAndValidateCBPRMessage() {
         try {
             //Initialize the cbprMessage
-            CbprMessage cbprMessage = new CbprMessage();
+            CbprMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> cbprMessage = new CbprMessage<>();
             //Validate CBPR+ against the xml schema
             ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs009String.getBytes()));
             if (!validationErrorList.isEmpty()) {
@@ -113,8 +113,8 @@ public class ParseAndValidateCbprMessage {
             }
 
             //Extract the header and the core message from cbprMessage object
-            BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02) cbprMessage.getAppHdr();
-            FinancialInstitutionCreditTransfer08 financialInstitutionCreditTransfer08 = (FinancialInstitutionCreditTransfer08) cbprMessage.getDocument();
+            BusinessApplicationHeader02 businessApplicationHeader = cbprMessage.getAppHdr();
+            FinancialInstitutionCreditTransfer08 financialInstitutionCreditTransfer08 = cbprMessage.getDocument();
 
         } catch (Exception e) {
             e.printStackTrace();
