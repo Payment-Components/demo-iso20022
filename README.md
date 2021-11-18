@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.6.0/mx-21.6.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.7.0/mx-21.7.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,21 +24,21 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.6.0</version>
+    <version>21.7.0</version>
     <classifier>demo</classifier>
 </dependency>
 <!-- Import the CBPR+ demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.6.0</version>
+    <version>21.7.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 <!--Import the TARGET2 (RTGS) demo SDK-->
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.6.0</version>
+    <version>21.7.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
@@ -54,9 +54,9 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:21.6.0:demo@jar'
-implementation 'gr.datamation.mx:mx:21.6.0:demo-cbpr@jar'
-implementation 'gr.datamation.mx:mx:21.6.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:21.7.0:demo@jar'
+implementation 'gr.datamation.mx:mx:21.7.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:21.7.0:demo-rtgs@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -236,11 +236,11 @@ In this project you can see code for all the basic manipulation of an MX message
 
 - #### Auto Replies
     The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
-    The correspondent class belong to `gr.datamation.replies` package and extendσ the `CoreMessageAutoReplies` abstract Class.  
+    The correspondent class belongs to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
     This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
     `MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
     For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
-    We initiate these class with the source message.  
+    We initiate this class with the source message.  
     For a `pacs.008.001.10`, the initialization should be:
     ```java
     FIToFICustomerCreditTransfer10 pacs008 = new FIToFICustomerCreditTransfer10();
@@ -266,21 +266,46 @@ In this project you can see code for all the basic manipulation of an MX message
     PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
     ```
     
-    ##### RTGS
-    Target2 RTGS, supports the following replies:  
+    The following replies are supported:
+    ##### General
+    | Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                             |
+    | --------------- | --------------- | ------------------------------------ | ---------------------------------- | --------------------------------------------- |
+    | pacs.008.001.xx | pacs.004.001.xx | FIToFICustomerCreditTransferXX       | PaymentReturnXX                    | FIToFICustomerCreditTransferAutoReplies       |
+    | pacs.008.001.xx | camt.056.001.xx | FIToFICustomerCreditTransferXX       | FIToFIPaymentCancellationRequestXX | FIToFICustomerCreditTransferAutoReplies       |
+    | pacs.009.001.xx | pacs.004.001.xx | FinancialInstitutionCreditTransferXX | PaymentReturnXX                    | FinancialInstitutionCreditTransferAutoReplies |
+    | pacs.009.001.xx | camt.056.001.xx | FinancialInstitutionCreditTransferXX | FIToFIPaymentCancellationRequestXX | FinancialInstitutionCreditTransferAutoReplies |
+    | camt.056.001.xx | camt.029.001.xx | FIToFIPaymentCancellationRequestXX   | ResolutionOfInvestigationXX        | FIToFIPaymentCancellationRequestAutoReplies   |
 
-    | Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                             | 
-    | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | --------------------------------------------- |
+    _* Where XX represents the version of the message._  
+    Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/884bf8ac6bcdb715e047e8db83b3cb30).  
+    Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/609bc30465ac16783fcfcce890d9f4fc).  
+    Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/5cc032704225df3a9d3faa7ca067e70d).
+
+    ##### Target2 (RTGS)
+    | Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                                 |
+    | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
     | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferRtgsAutoReplies       |
     | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferRtgsAutoReplies       |
-    | pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08Rtgs       | ResolutionOfInvestigation09Rtgs        | FIToFICustomerCreditTransferRtgsAutoReplies       |
-    | &nbsp;          | &nbsp;          | &nbsp;                                   | &nbsp;                                 | &nbsp;                                        |
     | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferRtgsAutoReplies |
     | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08Rtgs | FIToFIPaymentCancellationRequest08Rtgs | FinancialInstitutionCreditTransferRtgsAutoReplies |
-    | pacs.009.001.08 | camt.029.001.09 | FinancialInstitutionCreditTransfer08Rtgs | ResolutionOfInvestigation09Rtgs        | FinancialInstitutionCreditTransferRtgsAutoReplies |
-    
-    Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/664a90fcff8d6a998d348b39b4a896b3).
-    Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).
+    | camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Rtgs   | ResolutionOfInvestigation09Rtgs        | FIToFIPaymentCancellationRequestRtgsAutoReplies   |
+
+    Sample code for `FIToFICustomerCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/664a90fcff8d6a998d348b39b4a896b3).  
+    Sample code for `FinancialInstitutionCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).  
+    Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/128efb049020662d394c5e09e341635e).
+
+    ##### CBPR+
+    | Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                                 |
+    | --------------- | --------------- | ------------------------------------ | ---------------------------------- | ------------------------------------------------- |
+    | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08       | PaymentReturn09                    | FIToFICustomerCreditTransferCbprAutoReplies       |
+    | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08       | FIToFIPaymentCancellationRequest08 | FIToFICustomerCreditTransferCbprAutoReplies       |
+    | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08 | PaymentReturn09                    | FinancialInstitutionCreditTransferCbprAutoReplies |
+    | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08 | FIToFIPaymentCancellationRequest08 | FinancialInstitutionCreditTransferCbprAutoReplies |
+    | camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08   | ResolutionOfInvestigation09        | FIToFIPaymentCancellationRequestCbprAutoReplies   |
+
+    Sample code for `FIToFICustomerCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/939ce4830069d2b6bad1e54aee1357c2).  
+    Sample code for `FinancialInstitutionCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/f6568aeca8fce8b6afb1a69523571e39).  
+    Sample code for `FIToFIPaymentCancellationRequestCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/3aad11dd46801eba1d873d9dd1279f87).
 
 - #### CBPR+ messages  
     In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
