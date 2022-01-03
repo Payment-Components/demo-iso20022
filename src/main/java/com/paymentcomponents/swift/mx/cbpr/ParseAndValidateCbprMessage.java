@@ -60,13 +60,12 @@ public class ParseAndValidateCbprMessage {
         try {
             //Initialize the cbprMessage
             CbprMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> cbprMessage = new CbprMessage<>(new BusinessApplicationHeader02(), new FinancialInstitutionCreditTransfer08());
-            //Validate CBPR+ against the xml schema
-            ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs009String.getBytes()));
+            //Fill the cbprMessage with data from xml and validate CBPR+ against the xml schema
+            ValidationErrorList validationErrorList = cbprMessage.autoParseAndValidateXml(new ByteArrayInputStream(validCbprPacs009String.getBytes()));
             if (!validationErrorList.isEmpty()) {
                 handleValidationError(validationErrorList);
                 return;
             }
-            cbprMessage.parseXml(validCbprPacs009String); //Fill the cbprMessage with data from xml
 
             //Perform validation in both header and message object using cbprMessage
             //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
@@ -93,14 +92,12 @@ public class ParseAndValidateCbprMessage {
         try {
             //Initialize the cbprMessage
             CbprMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> cbprMessage = new CbprMessage<>();
-            //Validate CBPR+ against the xml schema
-            ValidationErrorList validationErrorList = cbprMessage.validateXml(new ByteArrayInputStream(validCbprPacs009String.getBytes()));
+            //Fill the cbprMessage with data from xml and validate CBPR+ against the xml schema
+            ValidationErrorList validationErrorList = cbprMessage.autoParseAndValidateXml(new ByteArrayInputStream(validCbprPacs009String.getBytes()));
             if (!validationErrorList.isEmpty()) {
                 handleValidationError(validationErrorList);
                 return;
             }
-            //Fill the cbprMessage with data from xml
-            cbprMessage.autoParseXml(validCbprPacs009String);
 
             //Perform validation in both header and message object using cbprMessage
             validationErrorList.addAll(cbprMessage.autoValidate());
