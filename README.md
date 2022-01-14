@@ -27,20 +27,6 @@ Import the SDK
     <version>21.8.0</version>
     <classifier>demo</classifier>
 </dependency>
-<!-- Import the CBPR+ demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>21.8.0</version>
-    <classifier>demo-cbpr</classifier>
-</dependency>
-<!--Import the TARGET2 (RTGS) demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>21.8.0</version>
-    <classifier>demo-rtgs</classifier>
-</dependency>
 ```
 
 ##### Gradle 
@@ -55,8 +41,6 @@ repositories {
 Import the SDK
 ```groovy
 implementation 'gr.datamation.mx:mx:21.8.0:demo@jar'
-implementation 'gr.datamation.mx:mx:21.8.0:demo-cbpr@jar'
-implementation 'gr.datamation.mx:mx:21.8.0:demo-rtgs@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -228,255 +212,304 @@ In this project you can see code for all the basic manipulation of an MX message
 - [Parse and validate an invalid pacs.002 (get syntax, network validation errors)](src/main/java/com/paymentcomponents/swift/mx/ParseAndValidateInvalidPacs002_12.java)
 - [Build a valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/BuildValidPacs002_12.java)
 - [Convert an MX message to XML](src/main/java/com/paymentcomponents/swift/mx/ConvertMX2XML.java)
-- [Parse and validate CBPR+ message](src/main/java/com/paymentcomponents/swift/mx/cbpr/ParseAndValidateCbprMessage.java)
-- [Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/rtgs/ParseAndValidateRtgsMessage.java)
+
+## CBPR+ messages
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the CBPR+ demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>21.8.0</version>
+    <classifier>demo-cbpr</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:21.8.0:demo-cbpr@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse CBPR+ Message
+In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
+
+```java
+//Initialize the cbprMessage
+CbprMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> cbprMessage = new CbprMessage<>(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08());
+//Fill the cbprMessage with data from xml validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = cbprMessage.autoParseAndValidateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
+//Perform validation in both header and message object using cbprMessage
+//Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
+validationErrorList.addAll(cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008));
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+ 
+//Extract the header and the core message from cbprMessage object
+BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)cbprMessage.getAppHdr();
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) cbprMessage.getDocument();
+```
+
+### AutoParse CBPR+ Message
+```java
+//Initialize the cbprMessage
+CbprMessage<?, ?> cbprMessage = new CbprMessage<>();
+//Fill the cbprMessage with data from xml and validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = cbprMessage.autoParseAndValidateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
+
+//Perform validation in both header and message object using cbprMessage
+validationErrorList.addAll(cbprMessage.autoValidate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct CBPR+ Message
+```java
+//Initialize the header object
+BusinessApplicationHeader02 businessApplicationHeader = new BusinessApplicationHeader02();
+businessApplicationHeader.parseXML(validCbprPacs008HeaderString);
+
+//Initialize the document object
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
+fiToFICustomerCreditTransfer.parseXML(validCbprPacs008DocumentString);
+
+//We fill the elements of the message object using setters
+fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
+
+//Construct the CBPR message object      
+CbprMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> cbprMessage = new CbprMessage<>(businessApplicationHeader, fiToFICustomerCreditTransfer);
+
+//Perform validation in both header and message object using cbprMessage
+//Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
+ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+In case you want to enclose the CBPR+ message under another Root Element, use the code below
+```java
+cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPayload
+```
+
+### Code samples
+[Parse and validate CBPR+ message](src/main/java/com/paymentcomponents/swift/mx/cbpr/ParseAndValidateCbprMessage.java)
+
+### Supported CBPR+ Message Types
+
+| ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
+  | ---------------- | ---------------- | --------------------                    | :---------------: |
+| camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |                   |
+| camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |                   |
+| camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |                   |
+| camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08 |                   |
+| camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08      |                   |
+| camt.057.001.06  | CAMT_057         | NotificationToReceive06                 |                   |
+| camt.060.001.05  | CAMT_060         | AccountReportingRequest05               |                   |
+| pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10             |                   |
+| pacs.004.001.09  | PACS_004         | PaymentReturn09                         |                   |
+| pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |                   |
+| pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |                   |
+| pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    | &check;           |
+| pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |                   |
+| pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |                   |
+| pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |                   |
+| pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |                   |
+| pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |                   |  
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                                 |
+  | --------------- | --------------- | ------------------------------------ | ---------------------------------- | ------------------------------------------------- |
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08       | PaymentReturn09                    | FIToFICustomerCreditTransferCbprAutoReplies       |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08       | FIToFIPaymentCancellationRequest08 | FIToFICustomerCreditTransferCbprAutoReplies       |
+| pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08 | PaymentReturn09                    | FinancialInstitutionCreditTransferCbprAutoReplies |
+| pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08 | FIToFIPaymentCancellationRequest08 | FinancialInstitutionCreditTransferCbprAutoReplies |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08   | ResolutionOfInvestigation09        | FIToFIPaymentCancellationRequestCbprAutoReplies   |
+
+Sample code for `FIToFICustomerCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/939ce4830069d2b6bad1e54aee1357c2).  
+Sample code for `FinancialInstitutionCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/f6568aeca8fce8b6afb1a69523571e39).  
+Sample code for `FIToFIPaymentCancellationRequestCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/3aad11dd46801eba1d873d9dd1279f87).
+
+Please refer to [general auto replies](#auto-replies-2) for more details.
 
 
-### More features are included in the paid version like
+## TARGET2 (RTGS) messages
 
-- #### Auto Replies
-    The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
-    The correspondent class belongs to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
-    This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
-    `MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
-    For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
-    We initiate this class with the source message.  
-    For a `pacs.008.001.10`, the initialization should be:
-    ```java
-    FIToFICustomerCreditTransfer10 pacs008 = new FIToFICustomerCreditTransfer10();
-    //fill the message object or parse from an xml
-    FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer10, PaymentReturn11> pacs008Replies = 
-        new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
-    ```
-    If we want to create a `pacs.004.001.11` reply for this pacs.008, we should call the `autoReply()` like this:
-    ```java
-    MsgReplyInfo msgReplyInfo = new MsgReplyInfo();
-    ReasonInformation reasonInformation = new ReasonInformation();
-    msgReplyInfo.setRsnInf(reasonInformation);
-  
-    reasonInformation.setType(ReasonInformation.Type.CD);
-    reasonInformation.setValue("AC01");
-    reasonInformation.setAddtlInf(Collections.singletonList("Additional info"));
-  
-    msgReplyInfo.setOrgnlInstrId("instrId");
-    msgReplyInfo.setReplyId("pacs008Reply");
-    msgReplyInfo.setIntrBkSttlmDt(new Date());
-    msgReplyInfo.setCharges(new BigDecimal("2.00"));
-    
-    PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
-    ```
-    
-    The following replies are supported:
-    ##### General
-    | Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                             |
-    | --------------- | --------------- | ------------------------------------ | ---------------------------------- | --------------------------------------------- |
-    | pacs.008.001.xx | pacs.004.001.xx | FIToFICustomerCreditTransferXX       | PaymentReturnXX                    | FIToFICustomerCreditTransferAutoReplies       |
-    | pacs.008.001.xx | camt.056.001.xx | FIToFICustomerCreditTransferXX       | FIToFIPaymentCancellationRequestXX | FIToFICustomerCreditTransferAutoReplies       |
-    | pacs.009.001.xx | pacs.004.001.xx | FinancialInstitutionCreditTransferXX | PaymentReturnXX                    | FinancialInstitutionCreditTransferAutoReplies |
-    | pacs.009.001.xx | camt.056.001.xx | FinancialInstitutionCreditTransferXX | FIToFIPaymentCancellationRequestXX | FinancialInstitutionCreditTransferAutoReplies |
-    | camt.056.001.xx | camt.029.001.xx | FIToFIPaymentCancellationRequestXX   | ResolutionOfInvestigationXX        | FIToFIPaymentCancellationRequestAutoReplies   |
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the TARGET2 (RTGS) demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>21.8.0</version>
+    <classifier>demo-rtgs</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:21.8.0:demo-rtgs@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
 
-    _* Where XX represents the version of the message._  
-    Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/884bf8ac6bcdb715e047e8db83b3cb30).  
-    Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/609bc30465ac16783fcfcce890d9f4fc).  
-    Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/5cc032704225df3a9d3faa7ca067e70d).
+### Parse TARGET2 Message
+In case you need to handle TARGET2 (RTGS) messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08Rtgs fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08Rtgs();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validateXML(new ByteArrayInputStream(validRtgsPacs008String.getBytes()));
+//Fill the message with data from xml
+fiToFICustomerCreditTransfer.parseXML(validRtgsPacs008String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiToFICustomerCreditTransfer.validate());  
 
-    ##### Target2 (RTGS)
-    | Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                                 |
-    | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
-    | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferRtgsAutoReplies       |
-    | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferRtgsAutoReplies       |
-    | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferRtgsAutoReplies |
-    | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08Rtgs | FIToFIPaymentCancellationRequest08Rtgs | FinancialInstitutionCreditTransferRtgsAutoReplies |
-    | camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Rtgs   | ResolutionOfInvestigation09Rtgs        | FIToFIPaymentCancellationRequestRtgsAutoReplies   |
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
 
-    Sample code for `FIToFICustomerCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/664a90fcff8d6a998d348b39b4a896b3).  
-    Sample code for `FinancialInstitutionCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).  
-    Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/128efb049020662d394c5e09e341635e).
+### AutoParse TARGET2 Message
+```java
+//Validate against the xml schema without knowing the message type. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = RtgsUtils.autoValidateXML(new ByteArrayInputStream(validRtgsPacs008String.getBytes()));
+//Fill the message with data from xml without knowing the message type
+Message message = RtgsUtils.autoParseXML(validRtgsPacs008String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(message.validate());
 
-    ##### CBPR+
-    | Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                                 |
-    | --------------- | --------------- | ------------------------------------ | ---------------------------------- | ------------------------------------------------- |
-    | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08       | PaymentReturn09                    | FIToFICustomerCreditTransferCbprAutoReplies       |
-    | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08       | FIToFIPaymentCancellationRequest08 | FIToFICustomerCreditTransferCbprAutoReplies       |
-    | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08 | PaymentReturn09                    | FinancialInstitutionCreditTransferCbprAutoReplies |
-    | pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08 | FIToFIPaymentCancellationRequest08 | FinancialInstitutionCreditTransferCbprAutoReplies |
-    | camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08   | ResolutionOfInvestigation09        | FIToFIPaymentCancellationRequestCbprAutoReplies   |
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
 
-    Sample code for `FIToFICustomerCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/939ce4830069d2b6bad1e54aee1357c2).  
-    Sample code for `FinancialInstitutionCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/f6568aeca8fce8b6afb1a69523571e39).  
-    Sample code for `FIToFIPaymentCancellationRequestCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/3aad11dd46801eba1d873d9dd1279f87).
+### Construct TARGET2 Message
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
 
-- #### CBPR+ messages  
-    In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
-    
-    ##### Parse CBPR+ Message
-    ```java
-    //Initialize the cbprMessage
-    CbprMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> cbprMessage = new CbprMessage<>(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08());
-    //Fill the cbprMessage with data from xml validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
-    ValidationErrorList validationErrorList = cbprMessage.autoParseAndValidateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
-    //Perform validation in both header and message object using cbprMessage
-    //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
-    validationErrorList.addAll(cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008));
-  
-    if (validationErrorList.isEmpty()) {
-        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
-    } else {
-        System.out.println(validationErrorList);
-    }
-     
-    //Extract the header and the core message from cbprMessage object
-    BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)cbprMessage.getAppHdr();
-    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) cbprMessage.getDocument();
-    ```
+//We fill the elements of the message object using setters
+fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
 
-    ###### AutoParse CBPR+ Message
-    ```java
-    //Initialize the cbprMessage
-    CbprMessage<?, ?> cbprMessage = new CbprMessage<>();
-    //Fill the cbprMessage with data from xml and validate CBPR+ against the xml schema. We can also exit in case of errors in this step.
-    ValidationErrorList validationErrorList = cbprMessage.autoParseAndValidateXml(new ByteArrayInputStream(validCbprPacs008String.getBytes()));
-  
-    //Perform validation in both header and message object using cbprMessage
-    validationErrorList.addAll(cbprMessage.autoValidate());
-  
-    if (validationErrorList.isEmpty()) {
-        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
-    } else {
-        System.out.println(validationErrorList);
-    }
-    ```
-    
-    ##### Construct CBPR+ Message
-    ```java
-    //Initialize the header object
-    BusinessApplicationHeader02 businessApplicationHeader = new BusinessApplicationHeader02();
-    businessApplicationHeader.parseXML(validCbprPacs008HeaderString);
+//Perform validation
+ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validate(); 
 
-    //Initialize the document object
-    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
-    fiToFICustomerCreditTransfer.parseXML(validCbprPacs008DocumentString);
-  
-    //We fill the elements of the message object using setters
-    fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
-    fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
-    //or setElement()
-    fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
-  
-    //Construct the CBPR message object      
-    CbprMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> cbprMessage = new CbprMessage<>(businessApplicationHeader, fiToFICustomerCreditTransfer);
-  
-    //Perform validation in both header and message object using cbprMessage
-    //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below)
-    ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_008); 
-  
-    if (validationErrorList.isEmpty()) {
-        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
-    } else {
-        System.out.println(validationErrorList);
-    }
-    ```
-  
-    In case you want to enclose the CBPR+ message under another Root Element, use the code below
-    ```java
-    cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPayload
-    ```
-  
-    ##### Supported CBPR+ Message Types  
-        
-    | ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
-    | ---------------- | ---------------- | --------------------                    | :---------------: |
-    | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |                   |
-    | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |                   |
-    | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |                   |
-    | camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08 |                   |
-    | camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08      |                   |
-    | camt.057.001.06  | CAMT_057         | NotificationToReceive06                 |                   |
-    | camt.060.001.05  | CAMT_060         | AccountReportingRequest05               |                   |
-    | pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10             |                   |
-    | pacs.004.001.09  | PACS_004         | PaymentReturn09                         |                   |
-    | pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |                   |
-    | pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |                   |
-    | pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    | &check;           |
-    | pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |                   |
-    | pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |                   |
-    | pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |                   |
-    | pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |                   |
-    | pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |                   |
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
 
-- #### TARGET2 (RTGS) messages  
-  In case you need to handle TARGET2 (RTGS) messages, then you need to handle objects that extend the ISO20022 classes.
+### Code samples
+[Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/rtgs/ParseAndValidateRtgsMessage.java)
 
-  ##### Parse TARGET2 Message
-    ```java
-    //Initialize the message object
-    FIToFICustomerCreditTransfer08Rtgs fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08Rtgs();
-    //Validate against the xml schema. We can also exit in case of errors in this step.
-    ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validateXML(new ByteArrayInputStream(validRtgsPacs008String.getBytes()));
-    //Fill the message with data from xml
-    fiToFICustomerCreditTransfer.parseXML(validRtgsPacs008String);
-    //Validate both the xml schema and rules
-    validationErrorList.addAll(fiToFICustomerCreditTransfer.validate());  
-  
-    if (validationErrorList.isEmpty()) {
-        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
-    } else {
-        System.out.println(validationErrorList);
-    }
-    ```
+### Supported TARGET2 Message Types
 
-  ###### AutoParse TARGET2 Message
-    ```java
-    //Validate against the xml schema without knowing the message type. We can also exit in case of errors in this step.
-    ValidationErrorList validationErrorList = RtgsUtils.autoValidateXML(new ByteArrayInputStream(validRtgsPacs008String.getBytes()));
-    //Fill the message with data from xml without knowing the message type
-    Message message = RtgsUtils.autoParseXML(validRtgsPacs008String);
-    //Validate both the xml schema and rules
-    validationErrorList.addAll(message.validate());
-  
-    if (validationErrorList.isEmpty()) {
-        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
-    } else {
-        System.out.println(validationErrorList);
-    }
-    ```
-
-  ##### Construct TARGET2 Message
-    ```java
-    //Initialize the message object
-    FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
-    
-    //We fill the elements of the message object using setters
-    fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
-    fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
-    //or setElement()
-    fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
-    
-    //Perform validation
-    ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validate(); 
-  
-    if (validationErrorList.isEmpty()) {
-        System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
-    } else {
-        System.out.println(validationErrorList);
-    }
-    ```
-
-  ##### Supported TARGET2 Message Types
-
-  | ISO20022 Message|Library Object class                         | Available in Demo |
+| ISO20022 Message|Library Object class                         | Available in Demo |
   | --------------- |-------------------                          | :---------------: |
-  | admi.007.001.01 | ReceiptAcknowledgement01Rtgs                |                   |
-  | camt.025.001.05 | Receipt05Rtgs                               |                   |
-  | camt.029.001.09 | ResolutionOfInvestigation09Rtgs             |                   |
-  | camt.050.001.05 | LiquidityCreditTransfer05Rtgs               |                   |
-  | camt.053.001.08 | BankToCustomerStatement08Rtgs               |                   |
-  | camt.054.001.08 | BankToCustomerDebitCreditNotification08Rtgs |                   |
-  | camt.056.001.08 | FIToFIPaymentCancellationRequest08Rtgs      |                   |
-  | pacs.002.001.10 | FIToFIPaymentStatusReport10Rtgs             |                   |
-  | pacs.004.001.09 | PaymentReturn09Rtgs                         |                   |
-  | pacs.008.001.08 | FIToFICustomerCreditTransfer08Rtgs          |                   |
-  | pacs.009.001.08 | FinancialInstitutionCreditTransfer08Rtgs    | &check;           |
-  | pacs.010.001.03 | FinancialInstitutionDirectDebit03Rtgs       |                   |
+| admi.007.001.01 | ReceiptAcknowledgement01Rtgs                |                   |
+| camt.025.001.05 | Receipt05Rtgs                               |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09Rtgs             |                   |
+| camt.050.001.05 | LiquidityCreditTransfer05Rtgs               |                   |
+| camt.053.001.08 | BankToCustomerStatement08Rtgs               |                   |
+| camt.054.001.08 | BankToCustomerDebitCreditNotification08Rtgs |                   |
+| camt.056.001.08 | FIToFIPaymentCancellationRequest08Rtgs      |                   |
+| pacs.002.001.10 | FIToFIPaymentStatusReport10Rtgs             |                   |
+| pacs.004.001.09 | PaymentReturn09Rtgs                         |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08Rtgs          |                   |
+| pacs.009.001.08 | FinancialInstitutionCreditTransfer08Rtgs    | &check;           |
+| pacs.010.001.03 | FinancialInstitutionDirectDebit03Rtgs       |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                                 |
+  | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferRtgsAutoReplies       |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferRtgsAutoReplies       |
+| pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferRtgsAutoReplies |
+| pacs.009.001.08 | camt.056.001.08 | FinancialInstitutionCreditTransfer08Rtgs | FIToFIPaymentCancellationRequest08Rtgs | FinancialInstitutionCreditTransferRtgsAutoReplies |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Rtgs   | ResolutionOfInvestigation09Rtgs        | FIToFIPaymentCancellationRequestRtgsAutoReplies   |
+
+Sample code for `FIToFICustomerCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/664a90fcff8d6a998d348b39b4a896b3).  
+Sample code for `FinancialInstitutionCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).  
+Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/128efb049020662d394c5e09e341635e).
+
+Please refer to [general auto replies](#auto-replies-2) for more details.
+
+
+## More features are included in the paid version
+
+### Auto Replies
   
+The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
+The correspondent class belongs to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
+This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
+`MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
+For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
+We initiate this class with the source message.  
+For a `pacs.008.001.10`, the initialization should be:
+```java
+FIToFICustomerCreditTransfer10 pacs008 = new FIToFICustomerCreditTransfer10();
+//fill the message object or parse from an xml
+FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer10, PaymentReturn11> pacs008Replies = 
+    new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
+```
+If we want to create a `pacs.004.001.11` reply for this pacs.008, we should call the `autoReply()` like this:
+```java
+MsgReplyInfo msgReplyInfo = new MsgReplyInfo();
+ReasonInformation reasonInformation = new ReasonInformation();
+msgReplyInfo.setRsnInf(reasonInformation);
+
+reasonInformation.setType(ReasonInformation.Type.CD);
+reasonInformation.setValue("AC01");
+reasonInformation.setAddtlInf(Collections.singletonList("Additional info"));
+
+msgReplyInfo.setOrgnlInstrId("instrId");
+msgReplyInfo.setReplyId("pacs008Reply");
+msgReplyInfo.setIntrBkSttlmDt(new Date());
+msgReplyInfo.setCharges(new BigDecimal("2.00"));
+
+PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
+```
+
+The following replies for generic iso20022 messages are supported:
+
+| Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                             |
+| --------------- | --------------- | ------------------------------------ | ---------------------------------- | --------------------------------------------- |
+| pacs.008.001.xx | pacs.004.001.xx | FIToFICustomerCreditTransferXX       | PaymentReturnXX                    | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.008.001.xx | camt.056.001.xx | FIToFICustomerCreditTransferXX       | FIToFIPaymentCancellationRequestXX | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.009.001.xx | pacs.004.001.xx | FinancialInstitutionCreditTransferXX | PaymentReturnXX                    | FinancialInstitutionCreditTransferAutoReplies |
+| pacs.009.001.xx | camt.056.001.xx | FinancialInstitutionCreditTransferXX | FIToFIPaymentCancellationRequestXX | FinancialInstitutionCreditTransferAutoReplies |
+| camt.056.001.xx | camt.029.001.xx | FIToFIPaymentCancellationRequestXX   | ResolutionOfInvestigationXX        | FIToFIPaymentCancellationRequestAutoReplies   |
+
+_* Where XX represents the version of the message._  
+Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/884bf8ac6bcdb715e047e8db83b3cb30).  
+Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/609bc30465ac16783fcfcce890d9f4fc).  
+Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/5cc032704225df3a9d3faa7ca067e70d).
+
+
+### See more provided SDKs on ISO20022 and SWIFT MT [here](https://github.com/Payment-Components)
