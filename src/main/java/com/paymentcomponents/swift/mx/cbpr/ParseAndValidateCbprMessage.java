@@ -42,6 +42,7 @@ public class ParseAndValidateCbprMessage {
 
             //Perform validation in both header and message object using cbprMessage
             //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
+            //CbprMessage.extractCbprMsgType() can also be used
             ValidationErrorList validationErrorList = cbprMessage.validate(CbprMessage.CbprMsgType.PACS_009_CORE);
 
             if (validationErrorList.isEmpty()) {
@@ -69,6 +70,7 @@ public class ParseAndValidateCbprMessage {
 
             //Perform validation in both header and message object using cbprMessage
             //Use CbprMessage.CbprMsgType enumeration object to select the matching schema (check the table of supported CBPR messages below
+            //CbprMessage.extractCbprMsgType() can also be used
             validationErrorList.addAll(cbprMessage.validate(CbprMessage.CbprMsgType.PACS_009_CORE));
 
             if (validationErrorList.isEmpty()) {
