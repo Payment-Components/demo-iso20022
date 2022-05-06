@@ -151,7 +151,7 @@ public class ParseAndValidateCbprMessage {
             "    </To>\n" +
             "    <BizMsgIdr>BBBB/120928-FICT/JPY/430</BizMsgIdr>\n" +
             "    <MsgDefIdr>pacs.009.001.08</MsgDefIdr>\n" +
-            "    <BizSvc>swift.cbprplus.01</BizSvc>\n" +
+            "    <BizSvc>swift.cbprplus.02</BizSvc>\n" +
             "    <MktPrctc>\n" +
             "        <Regy>string</Regy>\n" +
             "        <Id>string</Id>\n" +
@@ -177,7 +177,7 @@ public class ParseAndValidateCbprMessage {
             "        </To>\n" +
             "        <BizMsgIdr>BBBB/120928-FICT/JPY/430</BizMsgIdr>\n" +
             "        <MsgDefIdr>pacs.009.001.08</MsgDefIdr>\n" +
-            "        <BizSvc>swift.cbprplus.01</BizSvc>\n" +
+            "        <BizSvc>swift.cbprplus.02</BizSvc>\n" +
             "        <CreDt>2014-06-09T18:15:04+03:00</CreDt>\n" +
             "        <CpyDplct>COPY</CpyDplct>\n" +
             "        <Prty>NORM</Prty>\n" +
@@ -314,7 +314,7 @@ public class ParseAndValidateCbprMessage {
             "    </To>\n" +
             "    <BizMsgIdr>BBBB/120928-FICT/JPY/430</BizMsgIdr>\n" +
             "    <MsgDefIdr>pacs.009.001.08</MsgDefIdr>\n" +
-            "    <BizSvc>swift.cbprplus.01</BizSvc>\n" +
+            "    <BizSvc>swift.cbprplus.02</BizSvc>\n" +
             "    <MktPrctc>\n" +
             "        <Regy>string</Regy>\n" +
             "        <Id>string</Id>\n" +
@@ -340,7 +340,7 @@ public class ParseAndValidateCbprMessage {
             "        </To>\n" +
             "        <BizMsgIdr>BBBB/120928-FICT/JPY/430</BizMsgIdr>\n" +
             "        <MsgDefIdr>pacs.009.001.08</MsgDefIdr>\n" +
-            "        <BizSvc>swift.cbprplus.01</BizSvc>\n" +
+            "        <BizSvc>swift.cbprplus.02</BizSvc>\n" +
             "        <CreDt>2014-06-09T18:15:04+03:00</CreDt>\n" +
             "        <CpyDplct>COPY</CpyDplct>\n" +
             "        <Prty>NORM</Prty>\n" +
