@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.14.0/mx-21.14.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.16.0/mx-21.16.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,7 +24,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.14.0</version>
+    <version>21.16.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -40,7 +40,7 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:21.14.0:demo@jar'
+implementation 'gr.datamation.mx:mx:21.16.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -222,13 +222,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.14.0</version>
+    <version>21.16.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:21.14.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:21.16.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -350,6 +350,92 @@ Sample code for `FIToFIPaymentCancellationRequestCbprAutoReplies` can be found [
 
 Please refer to [general auto replies](#auto-replies-2) for more details.
 
+## SCRIPS (MEPS+) messages
+
+### Parse SCRIPS Message
+In case you need to handle SCRIPS messages, then you need to handle objects of ScripsMessage class.
+
+```java
+//Initialize the scripsMessage
+ScripsMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> scripsMessage = new ScripsMessage<>(new BusinessApplicationHeader02(), new FinancialInstitutionCreditTransfer08());
+//Fill the scripsMessage with data from xml and validate SCRIPS against the xml schema
+ValidationErrorList validationErrorList = scripsMessage.autoParseAndValidateXml(new ByteArrayInputStream(validScripsPacs009CoreString.getBytes()));
+//Perform validation in both header and message object using scripsMessage
+//Use ScripsMessage.ScripsMsgType enumeration object to select the matching schema (check the table of supported SCRIPS messages below
+//ScripsMessage.extractScripsMsgType() can also be used
+validationErrorList.addAll(scripsMessage.validate(ScripsMessage.ScripsMsgType.PACS_009_CORE));
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+ 
+//Extract the header and the core message from scripsMessage object
+BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)scripsMessage.getAppHdr();
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) scripsMessage.getDocument();
+```
+
+### AutoParse SCRIPS Message
+```java
+//Initialize the scripsMessage
+ScripsMessage<?, ?> scripsMessage = new ScripsMessage<>();
+//Fill the scripsMessage with data from xml and validate SCRIPS against the xml schema
+ValidationErrorList validationErrorList = scripsMessage.autoParseAndValidateXml(new ByteArrayInputStream(validScripsPacs009CoreString.getBytes()));
+
+//Perform validation in both header and message object using scripsMessage
+validationErrorList.addAll(scripsMessage.autoValidate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println("Message is valid");
+    System.out.println(scripsMessage.convertToXML()); //Get the generated xmls for head and document
+} else {
+    handleValidationError(validationErrorList);
+}
+```
+
+### Construct SCRIPS Message
+```java
+//Initialize the document object
+FinancialInstitutionCreditTransfer08 financialInstitutionCreditTransfer08 = new FinancialInstitutionCreditTransfer08();
+financialInstitutionCreditTransfer08.parseXML(validScripsPacs009CoreDocumentString);
+
+//We fill the elements of the message object using setters
+//financialInstitutionCreditTransfer08.getMessage().setGrpHdr(new GroupHeader93())
+//financialInstitutionCreditTransfer08.getMessage().getGrpHdr().setMsgId("1234")
+
+//or setElement()
+//financialInstitutionCreditTransfer08.setElement("GrpHdr/MsgId", "1234")
+
+//Construct the SCRIPS message object using two separate objects, header, document
+ScripsMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> scripsMessage = new ScripsMessage<>(businessApplicationHeader, financialInstitutionCreditTransfer08);
+
+//Perform validation in both header and message object using scripsMessage
+//Use ScripsMessage.ScripsMsgType enumeration object to select the matching schema (check the table of supported SCRIPS messages below
+//ScripsMessage.extractScripsMsgType() can also be used
+ValidationErrorList validationErrorList = scripsMessage.validate(ScripsMessage.ScripsMsgType.PACS_009_CORE);
+
+if (validationErrorList.isEmpty()) {
+    System.out.println("Message is valid");
+    System.out.println(scripsMessage.convertToXML()); //Get the generated xmls for head and document
+} else {
+    handleValidationError(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SCRIPS message](https://gist.github.com/GeorgeAnt/4f7f7810ef8aad2103799ea7095590db)
+
+### Supported SCRIPS Message Types
+
+| ISO20022 Message | ScripsMsgType ENUM | Library Object class                    |
+  |--------------------| ---------------- | --------------------                   
+| camt.029.001.09  | CAMT_029           | ResolutionOfInvestigation09             |
+| camt.056.001.08  | CAMT_056           | FIToFIPaymentCancellationRequest08      |
+| pacs.008.001.08  | PACS_008           | FIToFICustomerCreditTransfer08          |
+| pacs.009.001.08  | PACS_009_CORE      | FinancialInstitutionCreditTransfer08    |
+| pacs.009.001.08  | PACS_009_COV       | FinancialInstitutionCreditTransfer08    |
+
 
 ## TARGET2 (RTGS) messages
 
@@ -360,13 +446,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.14.0</version>
+    <version>21.16.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:21.14.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:21.16.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
