@@ -579,7 +579,13 @@ reasonInformation.setAddtlInf(Collections.singletonList("Additional info"));
 msgReplyInfo.setOrgnlInstrId("instrId");
 msgReplyInfo.setReplyId("pacs008Reply");
 msgReplyInfo.setIntrBkSttlmDt(new Date());
-msgReplyInfo.setCharges(new BigDecimal("2.00"));
+
+ChargesInformation chargesInformation = new ChargesInformation();
+chargesInformation.setAmount(new BigDecimal("2.00"));
+chargesInformation.setAgentBic("AAAAGB2L");
+msgReplyInfo.setChargesInformation(Collections.singletonList(chargesInformation));
+
+msgReplyInfo.setChargeBearer("SLEV");
 
 PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
 ```
