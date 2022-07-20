@@ -312,7 +312,7 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 ### Code samples
 [Parse and validate CBPR+ message](src/main/java/com/paymentcomponents/swift/mx/cbpr/ParseAndValidateCbprMessage.java)
 
-### Supported CBPR+ Message Types
+### Supported CBPR+ Message Types (v2.1)
 
 | ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
   | ---------------- | ---------------- | --------------------                    | :---------------: |
@@ -426,7 +426,7 @@ if (validationErrorList.isEmpty()) {
 ### Code samples
 [Parse and validate SCRIPS message](https://gist.github.com/GeorgeAnt/4f7f7810ef8aad2103799ea7095590db)
 
-### Supported SCRIPS Message Types
+### Supported SCRIPS Message Types (v2.1)
 
 | ISO20022 Message | ScripsMsgType ENUM | Library Object class                    |
   |--------------------| ---------------- | --------------------                   
@@ -515,7 +515,7 @@ if (validationErrorList.isEmpty()) {
 ### Code samples
 [Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/rtgs/ParseAndValidateRtgsMessage.java)
 
-### Supported TARGET2 Message Types
+### Supported TARGET2 Message Types (v2.2)
 
 | ISO20022 Message|Library Object class                         | Available in Demo |
   | --------------- |-------------------                          | :---------------: |
