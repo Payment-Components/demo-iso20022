@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.20.0/mx-21.20.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/21.21.0/mx-21.21.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,7 +24,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.20.0</version>
+    <version>21.21.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -40,7 +40,7 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:21.20.0:demo@jar'
+implementation 'gr.datamation.mx:mx:21.21.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -222,13 +222,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.20.0</version>
+    <version>21.21.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:21.20.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:21.21.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -424,9 +424,9 @@ if (validationErrorList.isEmpty()) {
 ```
 
 ### Code samples
-[Parse and validate SCRIPS message](https://gist.github.com/GeorgeAnt/4f7f7810ef8aad2103799ea7095590db)
+[Parse and validate SCRIPS message](https://gist.github.com/johnmara-pc14/0cacc9f83d1969f34d7adeb340abf186)
 
-### Supported SCRIPS Message Types (v2.1)
+### Supported SCRIPS Message Types (v2.4)
 
 | ISO20022 Message | ScripsMsgType ENUM | Library Object class                    |
   |--------------------| ---------------- | --------------------                   
@@ -446,13 +446,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>21.20.0</version>
+    <version>21.21.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:21.20.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:21.21.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
