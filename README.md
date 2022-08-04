@@ -429,7 +429,7 @@ if (validationErrorList.isEmpty()) {
 ### Supported SCRIPS Message Types (v2.4)
 
 | ISO20022 Message | ScripsMsgType ENUM | Library Object class                    |
-  |--------------------| ---------------- | --------------------                   
+|------------------|--------------------|-----------------------------------------|
 | camt.029.001.09  | CAMT_029           | ResolutionOfInvestigation09             |
 | camt.056.001.08  | CAMT_056           | FIToFIPaymentCancellationRequest08      |
 | pacs.008.001.08  | PACS_008           | FIToFICustomerCreditTransfer08          |
@@ -518,7 +518,7 @@ if (validationErrorList.isEmpty()) {
 ### Supported TARGET2 Message Types (v2.2)
 
 | ISO20022 Message|Library Object class                         | Available in Demo |
-  | --------------- |-------------------                          | :---------------: |
+| --------------- |-------------------                          | :---------------: |
 | admi.007.001.01 | ReceiptAcknowledgement01Rtgs                |                   |
 | camt.025.001.05 | Receipt05Rtgs                               |                   |
 | camt.029.001.09 | ResolutionOfInvestigation09Rtgs             |                   |
@@ -535,7 +535,7 @@ if (validationErrorList.isEmpty()) {
 ### Auto replies
 
 | Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                                 |
-  | --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
+| --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
 | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08Rtgs       | PaymentReturn09Rtgs                    | FIToFICustomerCreditTransferRtgsAutoReplies       |
 | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Rtgs       | FIToFIPaymentCancellationRequest08Rtgs | FIToFICustomerCreditTransferRtgsAutoReplies       |
 | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08Rtgs | PaymentReturn09Rtgs                    | FinancialInstitutionCreditTransferRtgsAutoReplies |
@@ -547,6 +547,89 @@ Sample code for `FinancialInstitutionCreditTransferRtgsAutoReplies` can be found
 Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/128efb049020662d394c5e09e341635e).
 
 Please refer to [general auto replies](#auto-replies-2) for more details.
+
+## FedNow messages
+
+### Parse and Validate FedNow Message
+In case you need to handle FedNow messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08Fednow fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08Fednow();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validateXML(new ByteArrayInputStream(validFednowPacs008String.getBytes()));
+//Fill the message with data from xml
+fiToFICustomerCreditTransfer.parseXML(validFednowPacs008String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiToFICustomerCreditTransfer.validate());  
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Auto Parse and Validate FedNow Message
+```java
+//Validate against the xml schema without knowing the message type. We can also exit in case of errors in this step.
+//We can use FednowUtils.FedNowMessageType enumeration in order to specify the fednow type we are interested in messages with multiple types (pacs.002, camt.052, camt.029)
+ValidationErrorList validationErrorList = FednowUtils.autoValidateXML(new ByteArrayInputStream(validFednowPacs008String.getBytes()));
+//Fill the message with data from xml without knowing the message type
+Message message = FednowUtils.autoParseXML(validFednowPacs008String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(message.validate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct FedNow Message
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08Fednow fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08Fednow();
+
+//We fill the elements of the message object using setters
+fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validate(); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate FedNow message](https://gist.github.com/johnmara-pc14/de651dc9a44a558e7e59126bb5484fe4)
+
+### Supported FedNow Message Types (29 June 2022)
+
+| ISO20022 Message | Library Object class                                            |            Category            |
+|------------------|-----------------------------------------------------------------|:------------------------------:|
+| pacs.008.001.08  | FIToFICustomerCreditTransfer08Fednow                            |   Customer Credit Transfers    |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10FednowPaymentStatusFednow            |   Customer Credit Transfers    |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10ParticipantPaymentStatusFednow       |   Customer Credit Transfers    |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03Fednow                              |   Customer Credit Transfers    |
+| camt.029.001.09  | ResolutionOfInvestigation09ReturnRequestResponseFednow          |        Payment Returns         |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08Fednow                        |        Payment Returns         |
+| pacs.004.001.10  | PaymentReturn10Fednow                                           |        Payment Returns         |
+| pacs.009.001.08  | FinancialInstitutionCreditTransfer08Fednow                      | Liquidity Management Transfers |
+| admi.002.001.01  | MessageReject01Fednow                                           |        System Messages         |
+| admi.007.001.01  | ReceiptAcknowledgement01Fednow                                  |        System Messages         |
+| camt.060.001.05  | AccountReportingRequest05Fednow                                 |       Account Reporting        |
+| camt.052.001.08  | BankToCustomerAccountReport08AccountActivityDetailsReportFednow |       Account Reporting        |
+| camt.052.001.08  | BankToCustomerAccountReport08AccountActivityTotalsReportFednow  |       Account Reporting        |
+| camt.052.001.08  | BankToCustomerAccountReport08AccountBalanceReportFednow         |       Account Reporting        |
+| camt.054.001.08  | BankToCustomerDebitCreditNotification08Fednow                   |       Account Reporting        |
+| head.001.001.02  | BusinessApplicationHeader02Fednow                               |                                |
 
 
 ## More features are included in the paid version
