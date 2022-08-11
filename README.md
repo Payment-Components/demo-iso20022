@@ -165,6 +165,7 @@ It returns a List and each element of the List is a String array consisted of 3 
 1. Field Path excluding the leaf code
 2. Leaf code
 3. Leaf value
+4. Leaf attributes (e.g. `Ccy=EUR;`)
 
 For example if we call the `resolvePaths()` on a `pacs.002.001.12`
 ```java
@@ -172,17 +173,17 @@ FIToFIPaymentStatusReport12 pacs002 = new FIToFIPaymentStatusReport12();
 //fill the message object or parse from an xml
 List<String[]> paths = pacs002.resolvePaths();
 for (String[] path: paths)
-    System.out.println("Field path: " + path[0] + " | " + "Field code: " + path[1] +  " | " + "Field value: " + path[2])
+        System.out.println("Field path: " + path[0] + " | " + "Field code: " + path[1] +  " | " + "Field value: " + path[2] + " | " + "Field attributes: " + path[3]);
 ```
 part of the output we will receive is
 ```
-Field path: /Document/FIToFIPmtStsRpt/GrpHdr | Field code: MsgId | Field value: ABABUS23-STATUS-456/04
-Field path: /Document/FIToFIPmtStsRpt/GrpHdr | Field code: CreDtTm | Field value: 2015-06-29T09:56:00
-Field path: /Document/FIToFIPmtStsRpt/OrgnlGrpInfAndSts | Field code: OrgnlMsgId | Field value: AAAA100628-123v
-Field path: /Document/FIToFIPmtStsRpt/OrgnlGrpInfAndSts | Field code: OrgnlMsgNmId | Field value: pacs.003.001.09
-Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: OrgnlEndToEndId | Field value: VA060327/0123
-Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: OrgnlTxId | Field value: AAAAUS29/100628/ad458
-Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: TxSts | Field value: RJCT
+Field path: /Document/FIToFIPmtStsRpt/GrpHdr | Field code: MsgId | Field value: ABABUS23-STATUS-456/04 | Field attributes: null
+Field path: /Document/FIToFIPmtStsRpt/GrpHdr | Field code: CreDtTm | Field value: 2015-06-29T09:56:00 | Field attributes: null
+Field path: /Document/FIToFIPmtStsRpt/OrgnlGrpInfAndSts | Field code: OrgnlMsgId | Field value: AAAA100628-123v | Field attributes: null
+Field path: /Document/FIToFIPmtStsRpt/OrgnlGrpInfAndSts | Field code: OrgnlMsgNmId | Field value: pacs.003.001.09 | Field attributes: null
+Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: OrgnlEndToEndId | Field value: VA060327/0123 | Field attributes: null
+Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: OrgnlTxId | Field value: AAAAUS29/100628/ad458 | Field attributes: null
+Field path: /Document/FIToFIPmtStsRpt/TxInfAndSts | Field code: TxSts | Field value: RJCT | Field attributes: null
 ```
 In case the child of an xml element is an array, we will receive an index of the element.  
 In our case, if pacs.002 had more than one `FIToFIPmtStsRpt`, the path would have an index. E.g.
@@ -337,7 +338,7 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 ### Auto replies
 
 | Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                                 |
-  | --------------- | --------------- | ------------------------------------ | ---------------------------------- | ------------------------------------------------- |
+| --------------- | --------------- | ------------------------------------ | ---------------------------------- | ------------------------------------------------- |
 | pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08       | PaymentReturn09                    | FIToFICustomerCreditTransferCbprAutoReplies       |
 | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08       | FIToFIPaymentCancellationRequest08 | FIToFICustomerCreditTransferCbprAutoReplies       |
 | pacs.009.001.08 | pacs.004.001.09 | FinancialInstitutionCreditTransfer08 | PaymentReturn09                    | FinancialInstitutionCreditTransferCbprAutoReplies |
