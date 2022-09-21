@@ -632,6 +632,16 @@ if (validationErrorList.isEmpty()) {
 | camt.054.001.08  | BankToCustomerDebitCreditNotification08Fednow                   |       Account Reporting        |
 | head.001.001.02  | BusinessApplicationHeader02Fednow                               |                                |
 
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                                 |
+| --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
+| pacs.008.001.08 | pacs.004.001.10 | FIToFICustomerCreditTransfer08Fednow     | PaymentReturn10Fednow                  | FIToFICustomerCreditTransferFednowAutoReplies     |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Fednow     | FIToFIPaymentCancellationRequest08Fednow | FIToFICustomerCreditTransferFednowAutoReplies   |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Fednow | ResolutionOfInvestigation09ReturnRequestResponseFednow                    | FIToFIPaymentCancellationRequestFednowAutoReplies |
+
+Sample code for `FIToFICustomerCreditTransferFednowAutoReplies` can be found [here](https://gist.github.com/GeorgeAnt/dcc06c195d0b9f2f4e25f1f26906ba7c).  
+Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found [here](https://gist.github.com/GeorgeAnt/5fa18ec925194cf7296beb30164dbb6d).
 
 ## More features are included in the paid version
 
