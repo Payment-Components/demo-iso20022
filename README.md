@@ -634,11 +634,11 @@ if (validationErrorList.isEmpty()) {
 
 ### Auto replies
 
-| Source Message  | Reply Message   | Source Class                             | Reply Class                            | AutoReplies Class                                 |
-| --------------- | --------------- | ---------------------------------------- | -------------------------------------- | ------------------------------------------------- |
-| pacs.008.001.08 | pacs.004.001.10 | FIToFICustomerCreditTransfer08Fednow     | PaymentReturn10Fednow                  | FIToFICustomerCreditTransferFednowAutoReplies     |
-| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Fednow     | FIToFIPaymentCancellationRequest08Fednow | FIToFICustomerCreditTransferFednowAutoReplies   |
-| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Fednow | ResolutionOfInvestigation09ReturnRequestResponseFednow                    | FIToFIPaymentCancellationRequestFednowAutoReplies |
+| Source Message  | Reply Message   | Source Class                             | Reply Class                                            | AutoReplies Class                                 |
+| --------------- | --------------- | ---------------------------------------- |--------------------------------------------------------| ------------------------------------------------- |
+| pacs.008.001.08 | pacs.004.001.10 | FIToFICustomerCreditTransfer08Fednow     | PaymentReturn10Fednow                                  | FIToFICustomerCreditTransferFednowAutoReplies     |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Fednow     | FIToFIPaymentCancellationRequest08Fednow               | FIToFICustomerCreditTransferFednowAutoReplies   |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Fednow | ResolutionOfInvestigation09ReturnRequestResponseFednow | FIToFIPaymentCancellationRequestFednowAutoReplies |
 
 Sample code for `FIToFICustomerCreditTransferFednowAutoReplies` can be found [here](https://gist.github.com/GeorgeAnt/dcc06c195d0b9f2f4e25f1f26906ba7c).  
 Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found [here](https://gist.github.com/GeorgeAnt/5fa18ec925194cf7296beb30164dbb6d).
@@ -648,7 +648,7 @@ Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found
 ### Auto Replies
   
 The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
-The correspondent class belongs to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
+The correspondent classes belong to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
 This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
 `MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
 For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
@@ -698,6 +698,50 @@ _* Where XX represents the version of the message._
 Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/884bf8ac6bcdb715e047e8db83b3cb30).  
 Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/609bc30465ac16783fcfcce890d9f4fc).  
 Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/5cc032704225df3a9d3faa7ca067e70d).
+
+### Universal Confirmations
+
+You can create Universal Confirmations `trck.001.001.02` for a `pacs.008` messages. It is the equivalent of creating MT199 Universal Confirmation for an MT103.  
+First, you need to initiate `FIToFICustomerCreditTransferAutoReplies` class since the method for Universal Confirmation exists there.  
+A Universal Confirmations message is represented by `UniversalConfirmationsMessage` and consists of the ApplicationHeader(`head.001.001.02`) and the Document(`trck.001.001.02`).  
+Available statuses are: `ACCC`, `ACSP` and `RJCT`.  
+Below you can see how to use it.
+```java
+//initiate a UniversalConfirmationsMessage instance
+String status = "ACSP";
+ReasonInformation rsnInf1 = new ReasonInformation();
+rsnInf1.setValue("G001");
+MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
+msgReplyInfo1.setRsnInf(rsnInf1);
+msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
+msgReplyInfo1.setChargeBearer("CRED"); //optional
+msgReplyInfo1.setChargesInformation(new ArrayList<>()); //optional
+msgReplyInfo1.getChargesInformation().add(new ChargesInformation()); //optional
+msgReplyInfo1.getChargesInformation().get(0).setAmount(new BigDecimal("1")); //optional
+
+//OR
+String status = "ACCC";
+MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
+msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
+
+//OR
+String status = "RJCT";
+ReasonInformation rsnInf1 = new ReasonInformation();
+rsnInf1.setValue("AM06");
+MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
+msgReplyInfo1.setRsnInf(rsnInf1);
+msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
+        
+UniversalConfirmationsMessage<BusinessApplicationHeader02, PaymentStatusTrackerUpdate02UniversalConfirmations> universalConfirmationsMessage =
+   new UniversalConfirmationsMessage<>(new BusinessApplicationHeader02(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
+
+//initiate the Reply Class instance
+FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer08>, PaymentStatusTrackerUpdate02UniversalConfirmations> fiToFICustomerCreditTransferAutoReplies =
+   new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
+
+//call method that generates the universal confirmation
+fiToFICustomerCreditTransferAutoReplies.universalConfirmations(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status);
+```
 
 
 ### See more provided SDKs on ISO20022 and SWIFT MT [here](https://github.com/Payment-Components)
