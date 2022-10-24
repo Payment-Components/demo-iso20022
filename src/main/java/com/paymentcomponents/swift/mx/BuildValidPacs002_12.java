@@ -2,8 +2,8 @@ package com.paymentcomponents.swift.mx;
 
 import gr.datamation.mx.message.pacs.FIToFIPaymentStatusReport12;
 import gr.datamation.validation.error.ValidationErrorList;
-import iso.pacs_002_001_12.GroupHeader101;
-import iso.pacs_002_001_12.OriginalGroupHeader17;
+import xsd.pacs_002_001_12.GroupHeader101;
+import xsd.pacs_002_001_12.OriginalGroupHeader17;
 
 public class BuildValidPacs002_12 {
 

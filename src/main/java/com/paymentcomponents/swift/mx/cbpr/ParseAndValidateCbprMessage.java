@@ -1,6 +1,6 @@
 package com.paymentcomponents.swift.mx.cbpr;
 
-import gr.datamation.mx.CbprMessage;
+import gr.datamation.iso20022.cbpr.CbprMessage;
 import gr.datamation.mx.message.head.BusinessApplicationHeader02;
 import gr.datamation.mx.message.pacs.FinancialInstitutionCreditTransfer08;
 import gr.datamation.validation.error.ValidationError;

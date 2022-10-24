@@ -1,7 +1,8 @@
 package com.paymentcomponents.swift.mx.rtgs;
+
 import gr.datamation.mx.Message;
-import gr.datamation.mx.RtgsUtils;
-import gr.datamation.mx.message.pacs.rtgs.FinancialInstitutionCreditTransfer08Rtgs;
+import gr.datamation.iso20022.target2.RtgsUtils;
+import gr.datamation.iso20022.target2.pacs.FinancialInstitutionCreditTransfer08Rtgs;
 import gr.datamation.validation.error.ValidationError;
 import gr.datamation.validation.error.ValidationErrorList;
 
