@@ -1,7 +1,7 @@
 package com.paymentcomponents.swift.mx;
 
 import com.paymentcomponents.swift.mx.cbpr.ParseAndValidateCbprMessage;
-import com.paymentcomponents.swift.mx.rtgs.ParseAndValidateRtgsMessage;
+import com.paymentcomponents.swift.mx.target2.ParseAndValidateRtgsMessage;
 
 public class Main {
 

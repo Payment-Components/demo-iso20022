@@ -6,7 +6,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/22.2.0/mx-22.2.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/22.3.0/mx-22.3.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -24,7 +24,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.2.0</version>
+    <version>22.3.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -40,7 +40,7 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:22.2.0:demo@jar'
+implementation 'gr.datamation.mx:mx:22.3.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -223,13 +223,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.2.0</version>
+    <version>22.3.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.2.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:22.3.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -449,13 +449,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.2.0</version>
+    <version>22.3.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.2.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:22.3.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -516,7 +516,7 @@ if (validationErrorList.isEmpty()) {
 ```
 
 ### Code samples
-[Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/rtgs/ParseAndValidateRtgsMessage.java)
+[Parse and validate TARGET2 message](src/main/java/com/paymentcomponents/swift/mx/target2/ParseAndValidateRtgsMessage.java)
 
 ### Supported TARGET2 Message Types (v2.2)
 
@@ -642,8 +642,8 @@ if (validationErrorList.isEmpty()) {
 | pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08Fednow     | FIToFIPaymentCancellationRequest08Fednow               | FIToFICustomerCreditTransferFednowAutoReplies   |
 | camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08Fednow | ResolutionOfInvestigation09ReturnRequestResponseFednow | FIToFIPaymentCancellationRequestFednowAutoReplies |
 
-Sample code for `FIToFICustomerCreditTransferFednowAutoReplies` can be found [here](https://gist.github.com/GeorgeAnt/dcc06c195d0b9f2f4e25f1f26906ba7c).  
-Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found [here](https://gist.github.com/GeorgeAnt/5fa18ec925194cf7296beb30164dbb6d).
+Sample code for `FIToFICustomerCreditTransferFednowAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/a03821408d286cbf55e1e5ad66b83f51).  
+Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/8cebbc6a7a63426b2f225e07edc399b5).
 
 ## More features are included in the paid version
 
@@ -734,15 +734,15 @@ MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
 msgReplyInfo1.setRsnInf(rsnInf1);
 msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
         
-UniversalConfirmationsMessage<BusinessApplicationHeader02, PaymentStatusTrackerUpdate02UniversalConfirmations> universalConfirmationsMessage =
+UniversalConfirmationsMessage universalConfirmationsMessage =
    new UniversalConfirmationsMessage<>(new BusinessApplicationHeader02(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
 
 //initiate the Reply Class instance
-FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer08>, PaymentStatusTrackerUpdate02UniversalConfirmations> fiToFICustomerCreditTransferAutoReplies =
-   new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
+UniversalConfirmationsAutoReplies<FIToFICustomerCreditTransfer08> universalConfirmationsAutoReplies =
+   new UniversalConfirmationsAutoReplies<>(pacs008);
 
 //call method that generates the universal confirmation
-fiToFICustomerCreditTransferAutoReplies.universalConfirmations(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status);
+universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status);
 ```
 
 

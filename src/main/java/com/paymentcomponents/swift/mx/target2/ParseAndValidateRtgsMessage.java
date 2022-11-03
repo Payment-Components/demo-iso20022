@@ -1,4 +1,4 @@
-package com.paymentcomponents.swift.mx.rtgs;
+package com.paymentcomponents.swift.mx.target2;
 
 import gr.datamation.mx.Message;
 import gr.datamation.iso20022.target2.RtgsUtils;
