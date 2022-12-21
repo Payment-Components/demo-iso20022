@@ -645,6 +645,10 @@ if (validationErrorList.isEmpty()) {
 Sample code for `FIToFICustomerCreditTransferFednowAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/a03821408d286cbf55e1e5ad66b83f51).  
 Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/8cebbc6a7a63426b2f225e07edc399b5).
 
+
+## SIC/euroSIC messages
+Coming soon..
+
 ## More features are included in the paid version
 
 ### Auto Replies
