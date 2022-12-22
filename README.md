@@ -647,7 +647,75 @@ Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found
 
 
 ## SIC/euroSIC messages
-Coming soon..
+
+### Parse and Validate SIC/euroSIC Message
+In case you need to handle SIC/euroSIC messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+ FIToFICustomerCreditTransfer08SicEurosic fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08SicEurosic();
+ //Validate against the xml schema. We can also exit in case of errors in this step.
+ ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validateXML(new ByteArrayInputStream(validSicEuroSicPacs008String.getBytes()));
+ //Fill the message with data from xml
+ fiToFICustomerCreditTransfer.parseXML(validSicEuroSicPacs008String);
+ //Validate both the xml schema and rules
+ validationErrorList.addAll(fiToFICustomerCreditTransfer.validate());
+ 
+ if (validationErrorList.isEmpty()) {
+ System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+ } else {
+ System.out.println(validationErrorList);
+ }
+```
+
+### Auto Parse and Validate SIC/euroSIC Message
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08SicEurosic fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08SicEurosic();
+//Validate against the xml schema without knowing the message type. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = SicEurosicUtils.autoValidateXML(new ByteArrayInputStream(validSicEuroSicPacs008String.getBytes()));
+//Fill the message with data from xml without knowing the message type
+Message message = SicEurosicUtils.autoParseXML(validSicEuroSicPacs008String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(message.validate());
+if (validationErrorList.isEmpty()) {
+System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+System.out.println(validationErrorList);
+}
+```
+### Construct SIC/euroSIC Message
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08Fednow fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08Fednow();
+
+//We fill the elements of the message object using setters
+fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setNbOfTxs("0");
+//or setElement()
+fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
+fiToFICustomerCreditTransfer.setElement("GrpHdr/NbOfTxs", "0");
+
+//Perform validation
+ValidationErrorList validationErrorList = fiToFICustomerCreditTransfer.validate();
+
+if (validationErrorList.isEmpty()) {
+System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+System.out.println(validationErrorList);
+```
+### Code samples
+[Parse and validate SIC/euroSIC message](https://gist.github.com/gantoniadispc14/3548898d326ff08247f3892c8a5ed784)
+
+### Supported SIC/euroSIC Message Types (22 December 2022)
+
+| ISO20022 Message | Library Object class                         |            Category            |
+|------------------|----------------------------------------------|:------------------------------:|
+| pacs.008.001.08  | FIToFICustomerCreditTransfer08SicEurosic     |   Customer Credit Transfers    |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10SicEurosic        |   Customer Credit Transfers    |
+| camt.029.001.09  | ResolutionOfInvestigation09SicEurosic        |        Payment Returns         |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08SicEurosic |        Payment Returns         |
+| pacs.004.001.09  | FIToFIPaymentStatusReport09SicEurosic        |        Payment Returns         |
 
 ## More features are included in the paid version
 
