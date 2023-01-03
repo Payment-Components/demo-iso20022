@@ -46,6 +46,7 @@ In case you purchase the SDK you will be given a protected Maven repository with
 
 #### Other dependencies
 There is a dependency in [groovy-all](https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all/2.4.8) library which is required for some of the included features (version 2.4.8 or later). 
+There is also a dependency in [classgraph](https://mvnrepository.com/artifact/io.github.classgraph/classgraph/4.8.153) library which is required for some of the included features (version 4.8.153 or later). 
 You can use maven or gradle to add the dependencies below or manually include the jar to your project.
 
 ##### Maven 
