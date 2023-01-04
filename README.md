@@ -56,10 +56,17 @@ You can use maven or gradle to add the dependencies below or manually include th
     <artifactId>groovy-all</artifactId>
     <version>2.4.8</version>
 </dependency>
+<dependency>
+   <groupId>io.github.classgraph</groupId>
+   <artifactId>classgraph</artifactId>
+   <version>4.8.153</version>
+</dependency>
+
 ```
 ##### Gradle 
 ```groovy
 compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.8'
+compile group: 'io.github.classgraph', name: 'classgraph', version: '4.8.153'
 ```
 
 
