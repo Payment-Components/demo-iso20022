@@ -1,3 +1,7 @@
+<a id="logo" href="https://www.paymentcomponents.com" title="Payment Components" target="_blank">
+    <img loading="lazy" src="https://i.postimg.cc/yN5TNy29/LOGO-HORIZONTAL2.png" alt="Payment Components">
+</a>
+
 # ISO20022 Message Validator Demo
 
 This project is part of the [FINaplo](https://finaplo.paymentcomponents.com) product and is here to demonstrate how our [SDK](https://finaplo.paymentcomponents.com/financial-messages) for SWIFT MX (ISO20022) Messages Validation works. 
