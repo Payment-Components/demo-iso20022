@@ -733,6 +733,97 @@ Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found
 | camt.056.001.08  | FIToFIPaymentCancellationRequest08SicEurosic |
 | pacs.004.001.09  | FIToFIPaymentStatusReport09SicEurosic        |
 
+## BAHTNET messages
+
+### Parse and Validate BAHTNET Message
+
+```java
+//Initialize the message object
+ FinancialInstitutionCreditTransfer08Bahtnet financialInstitutionCreditTransfer08Bahtnet = new FinancialInstitutionCreditTransfer08Bahtnet();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ ValidationErrorList validationErrorList = financialInstitutionCreditTransfer08Bahtnet.validateXML(new ByteArrayInputStream(validBahtnetPacs009String.getBytes()));
+//Fill the message with data from xml
+ financialInstitutionCreditTransfer08Bahtnet.parseXML(validBahtnetPacs009String);
+
+//Validate both the xml schema and rules
+ validationErrorList.addAll(financialInstitutionCreditTransfer08Bahtnet.validate());
+
+ if (validationErrorList.isEmpty()) {
+ System.out.println(financialInstitutionCreditTransfer08Bahtnet.convertToXML()); //Get the generated xml
+ } else {
+ System.out.println(validationErrorList);
+                }
+```
+
+### Auto Parse and Validate BAHTNET Message
+```java
+//Initialize the message object
+ FinancialInstitutionCreditTransfer08Bahtnet financialInstitutionCreditTransfer08Bahtnet = new FinancialInstitutionCreditTransfer08Bahtnet();
+
+//We fill the elements of the message object using setters
+ financialInstitutionCreditTransfer08Bahtnet.getMessage().setGrpHdr(new GroupHeader93());
+ 
+ financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setMsgId("1234");
+ financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setNbOfTxs("1");
+//or setElement()
+ financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/MsgId", "1234");
+ financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/NbOfTxs", "1");
+
+//Perform validation
+ ValidationErrorList validationErrorList = financialInstitutionCreditTransfer08Bahtnet.validate();
+
+ if (validationErrorList.isEmpty()) {
+ System.out.println(financialInstitutionCreditTransfer08Bahtnet.convertToXML()); //Get the generated xml
+ } else {
+ System.out.println(validationErrorList);
+ }
+```
+### Construct BAHTNET Message
+```java
+//Initialize the message object
+ FinancialInstitutionCreditTransfer08Bahtnet financialInstitutionCreditTransfer08Bahtnet = new FinancialInstitutionCreditTransfer08Bahtnet();
+
+//We fill the elements of the message object using setters
+ financialInstitutionCreditTransfer08Bahtnet.getMessage().setGrpHdr(new GroupHeader93());
+
+ financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setMsgId("1234");
+ financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setNbOfTxs("1");
+ //or setElement()
+ financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/MsgId", "1234");
+ financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/NbOfTxs", "1");
+
+ //Perform validation
+ ValidationErrorList validationErrorList = financialInstitutionCreditTransfer08Bahtnet.validate();
+
+ if (validationErrorList.isEmpty()) {
+ System.out.println(financialInstitutionCreditTransfer08Bahtnet.convertToXML()); //Get the generated xml
+ } else {
+ System.out.println(validationErrorList);
+ }
+```
+
+### Code samples
+[Parse and validate BAHTNET message](https://gist.github.com/gantoniadispc14/08aa8851ed5f88b1e1d3bd2f128a2023)
+
+### Supported BAHTNET Message Types (03 March 2022)
+
+| ISO20022 Message | Library Object class                            |            Category            |
+|------------------|-------------------------------------------------|:------------------------------:|
+| pacs.008.001.08  | FIToFICustomerCreditTransfer08Bahtnet           |   Customer Credit Transfers    |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10Bahtnet              |   Customer Credit Transfers    |   
+| pacs.009.001.08  | FinancialInstitutionCreditTransfer08Bahtnet     | Liquidity Management Transfers |
+| pacs.009.001.08  | FinancialInstitutionCreditTransfer08CovBahtnet  | Liquidity Management Transfers |
+| camt.054.001.08  | BankToCustomerCreditNotification08Bahtnet       |       Account Reporting        |
+| camt.054.001.08  | BankToCustomerDebitNotification08Bahtnet        |       Account Reporting        |
+| camt.053.001.08  | BankToCustomerStatement08Bahtnet                |                                |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08Bahtnet       |        Payment Returns         |
+| camt.056.001.08  | FIToFIPaymentCancellationRequestReturn08Bahtnet |        Payment Returns         |
+| camt.998.001.02  | ProprietaryMessage02Bahtnet                     |                                |
+| camt.087.001.06  | RequestToModifyPayment06Bahtnet                 |                                |
+| head.001.001.02  | BusinessApplicationHeader02Bahtnet              |                                |
+| mft.01           | MftDetailBahtnet01                              |                                |
+
+
 ## More features are included in the paid version
 
 ### Auto Replies
