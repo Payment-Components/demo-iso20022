@@ -10,7 +10,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/22.6.0/mx-22.6.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/22.8.0/mx-22.8.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -28,7 +28,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.6.0</version>
+    <version>22.8.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -44,7 +44,7 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:22.6.0:demo@jar'
+implementation 'gr.datamation.mx:mx:22.8.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -235,17 +235,17 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.6.0</version>
+    <version>22.8.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.6.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:22.8.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
-### Parse CBPR+ Message
+### Parse & Validate CBPR+ Message
 In case you need to handle CBPR+ messages, then you need to handle objects of CbprMessage class.
 
 ```java
@@ -269,7 +269,7 @@ BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHead
 FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) cbprMessage.getDocument();
 ```
 
-### AutoParse CBPR+ Message
+### AutoParse & Validate CBPR+ Message
 ```java
 //Initialize the cbprMessage
 CbprMessage<?, ?> cbprMessage = new CbprMessage<>();
@@ -328,7 +328,7 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 ### Supported CBPR+ Message Types (v2.1)
 
 | ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
-  | ---------------- | ---------------- | --------------------                    | :---------------: |
+| ---------------- | ---------------- | --------------------                    | :---------------: |
 | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |                   |
 | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |                   |
 | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |                   |
@@ -461,13 +461,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.6.0</version>
+    <version>22.8.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.6.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:22.8.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -735,93 +735,102 @@ Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found
 
 ## BAHTNET messages
 
-### Parse and Validate BAHTNET Message
+### Parse & Validate Bahtnet Message
+In case you need to handle Bahtnet messages, then you need to handle objects of `BahtnetMessage` class.
 
 ```java
-//Initialize the message object
- FinancialInstitutionCreditTransfer08Bahtnet financialInstitutionCreditTransfer08Bahtnet = new FinancialInstitutionCreditTransfer08Bahtnet();
-//Validate against the xml schema. We can also exit in case of errors in this step.
- ValidationErrorList validationErrorList = financialInstitutionCreditTransfer08Bahtnet.validateXML(new ByteArrayInputStream(validBahtnetPacs009String.getBytes()));
-//Fill the message with data from xml
- financialInstitutionCreditTransfer08Bahtnet.parseXML(validBahtnetPacs009String);
+//Initialize the bahtnetMessage
+BahtnetMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> bahtnetMessage = new BahtnetMessage<>(new BusinessApplicationHeader02(), new FIToFICustomerCreditTransfer08());
+//Fill the bahtnetMessage with data from xml validate Bahtnet against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = bahtnetMessage.autoParseAndValidateXml(new ByteArrayInputStream(validBahtnetPacs008String.getBytes()));
+//Perform validation in both header and message object using bahtnetMessage
+//Use BahtnetMessage.BahtnetMsgType enumeration object to select the matching schema (check the table of supported Bahtnet messages below
+//BahtnetMessage.extractBahtnetMsgType() can also be used
+validationErrorList.addAll(bahtnetMessage.validate(BahtnetMessage.BahtnetMsgType.PACS_008));
 
-//Validate both the xml schema and rules
- validationErrorList.addAll(financialInstitutionCreditTransfer08Bahtnet.validate());
-
- if (validationErrorList.isEmpty()) {
- System.out.println(financialInstitutionCreditTransfer08Bahtnet.convertToXML()); //Get the generated xml
- } else {
- System.out.println(validationErrorList);
-                }
-```
-
-### Auto Parse and Validate BAHTNET Message
-```java
-//Initialize the message object
- FinancialInstitutionCreditTransfer08Bahtnet financialInstitutionCreditTransfer08Bahtnet = new FinancialInstitutionCreditTransfer08Bahtnet();
-
-//We fill the elements of the message object using setters
- financialInstitutionCreditTransfer08Bahtnet.getMessage().setGrpHdr(new GroupHeader93());
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
  
- financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setMsgId("1234");
- financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setNbOfTxs("1");
-//or setElement()
- financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/MsgId", "1234");
- financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/NbOfTxs", "1");
-
-//Perform validation
- ValidationErrorList validationErrorList = financialInstitutionCreditTransfer08Bahtnet.validate();
-
- if (validationErrorList.isEmpty()) {
- System.out.println(financialInstitutionCreditTransfer08Bahtnet.convertToXML()); //Get the generated xml
- } else {
- System.out.println(validationErrorList);
- }
+//Extract the header and the core message from bahtnetMessage object
+BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)bahtnetMessage.getAppHdr();
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) bahtnetMessage.getDocument();
 ```
-### Construct BAHTNET Message
+
+### AutoParse & Validate Bahtnet Message
 ```java
-//Initialize the message object
- FinancialInstitutionCreditTransfer08Bahtnet financialInstitutionCreditTransfer08Bahtnet = new FinancialInstitutionCreditTransfer08Bahtnet();
+//Initialize the bahtnetMessage
+BahtnetMessage<?, ?> bahtnetMessage = new BahtnetMessage<>();
+//Fill the bahtnetMessage with data from xml and validate Bahtnet against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = bahtnetMessage.autoParseAndValidateXml(new ByteArrayInputStream(validBahtnetPacs008String.getBytes()));
+
+//Perform validation in both header and message object using bahtnetMessage
+validationErrorList.addAll(bahtnetMessage.autoValidate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct Bahtnet Message
+```java
+//Initialize the header object
+BusinessApplicationHeader02 businessApplicationHeader = new BusinessApplicationHeader02();
+businessApplicationHeader.parseXML(validBahtnetPacs008HeaderString);
+
+//Initialize the document object
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = new FIToFICustomerCreditTransfer08();
+fiToFICustomerCreditTransfer.parseXML(validBahtnetPacs008DocumentString);
 
 //We fill the elements of the message object using setters
- financialInstitutionCreditTransfer08Bahtnet.getMessage().setGrpHdr(new GroupHeader93());
+fiToFICustomerCreditTransfer.getMessage().setGrpHdr(new GroupHeader93());
+fiToFICustomerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFICustomerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
 
- financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setMsgId("1234");
- financialInstitutionCreditTransfer08Bahtnet.getMessage().getGrpHdr().setNbOfTxs("1");
- //or setElement()
- financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/MsgId", "1234");
- financialInstitutionCreditTransfer08Bahtnet.setElement("GrpHdr/NbOfTxs", "1");
+//Construct the Bahtnet message object      
+BahtnetMessage<BusinessApplicationHeader02, FIToFICustomerCreditTransfer08> bahtnetMessage = new BahtnetMessage<>(businessApplicationHeader, fiToFICustomerCreditTransfer);
 
- //Perform validation
- ValidationErrorList validationErrorList = financialInstitutionCreditTransfer08Bahtnet.validate();
+//Perform validation in both header and message object using bahtnetMessage
+//Use BahtnetMessage.BahtnetMsgType enumeration object to select the matching schema (check the table of supported Bahtnet messages below)
+//BahtnetMessage.extractBahtnetMsgType() can also be used
+ValidationErrorList validationErrorList = bahtnetMessage.validate(BahtnetMessage.BahtnetMsgType.PACS_008); 
 
- if (validationErrorList.isEmpty()) {
- System.out.println(financialInstitutionCreditTransfer08Bahtnet.convertToXML()); //Get the generated xml
- } else {
- System.out.println(validationErrorList);
- }
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+In case you want to enclose the Bahtnet message under another Root Element, use the code below
+```java
+bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want RequestPayload
 ```
 
 ### Code samples
-[Parse and validate BAHTNET message](https://gist.github.com/gantoniadispc14/08aa8851ed5f88b1e1d3bd2f128a2023)
+[Parse and validate BAHTNET message](https://gist.github.com/PaymentComponents/ded189c834a093c722b2965724033a3e)
 
 ### Supported BAHTNET Message Types (03 March 2022)
 
-| ISO20022 Message | Library Object class                            |            Category            |
-|------------------|-------------------------------------------------|:------------------------------:|
-| pacs.008.001.08  | FIToFICustomerCreditTransfer08Bahtnet           |   Customer Credit Transfers    |
-| pacs.002.001.10  | FIToFIPaymentStatusReport10Bahtnet              |   Customer Credit Transfers    |   
-| pacs.009.001.08  | FinancialInstitutionCreditTransfer08Bahtnet     | Liquidity Management Transfers |
-| pacs.009.001.08  | FinancialInstitutionCreditTransfer08CovBahtnet  | Liquidity Management Transfers |
-| camt.054.001.08  | BankToCustomerCreditNotification08Bahtnet       |       Account Reporting        |
-| camt.054.001.08  | BankToCustomerDebitNotification08Bahtnet        |       Account Reporting        |
-| camt.053.001.08  | BankToCustomerStatement08Bahtnet                |                                |
-| camt.056.001.08  | FIToFIPaymentCancellationRequest08Bahtnet       |        Payment Returns         |
-| camt.056.001.08  | FIToFIPaymentCancellationRequestReturn08Bahtnet |        Payment Returns         |
-| camt.998.001.02  | ProprietaryMessage02Bahtnet                     |                                |
-| camt.087.001.06  | RequestToModifyPayment06Bahtnet                 |                                |
-| head.001.001.02  | BusinessApplicationHeader02Bahtnet              |                                |
-| mft.01           | MftDetailBahtnet01                              |                                |
+| ISO20022 Message | BahtnetMsgType ENUM     | Library Object class                            |
+|------------------|-------------------------|-------------------------------------------------|
+| camt.053.001.08  | CAMT_053                | FIToFICustomerCreditTransfer08Bahtnet           |
+| camt.054.001.08  | CAMT_054_CDT            | FIToFIPaymentStatusReport10Bahtnet              |   
+| camt.054.001.08  | CAMT_054_DBT            | FinancialInstitutionCreditTransfer08Bahtnet     |
+| camt.056.001.08  | CAMT_056_CAN            | FinancialInstitutionCreditTransfer08CovBahtnet  |
+| camt.056.001.08  | CAMT_056_RTN            | BankToCustomerCreditNotification08Bahtnet       |
+| camt.087.001.06  | CAMT_087                | BankToCustomerDebitNotification08Bahtnet        |
+| camt.998.001.02  | CAMT_998                | BankToCustomerStatement08Bahtnet                |
+| mft.01           | MFT_01                  | FIToFIPaymentCancellationRequest08Bahtnet       |
+| pacs.002.001.10  | PACS_002                | FIToFIPaymentCancellationRequestReturn08Bahtnet |
+| pacs.008.001.08  | PACS_008                | ProprietaryMessage02Bahtnet                     |
+| pacs.009.001.08  | PACS_009_CORE           | RequestToModifyPayment06Bahtnet                 |
+| pacs.009.001.08  | PACS_009_COV            | MftDetailBahtnet01                              |
 
 
 ## More features are included in the paid version
