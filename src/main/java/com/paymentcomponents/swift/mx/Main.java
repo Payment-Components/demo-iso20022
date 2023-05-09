@@ -2,6 +2,7 @@ package com.paymentcomponents.swift.mx;
 
 import com.paymentcomponents.swift.mx.cbpr.ParseAndValidateCbprMessage;
 import com.paymentcomponents.swift.mx.target2.ParseAndValidateRtgsMessage;
+import com.paymentcomponents.swift.mx.sepa.epc.ct.ParseAndValidateSepaEpcCtMessage;
 
 public class Main {
 
@@ -12,6 +13,7 @@ public class Main {
         ConvertMX2XML.execute();
         ParseAndValidateCbprMessage.execute();
         ParseAndValidateRtgsMessage.execute();
+        ParseAndValidateSepaEpcCtMessage.execute();
     }
 
 }

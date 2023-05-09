@@ -365,7 +365,7 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 
 ## SCRIPS (MEPS+) messages
 
-### Parse SCRIPS Message
+### Parse & Validate SCRIPS Message
 In case you need to handle SCRIPS messages, then you need to handle objects of ScripsMessage class.
 
 ```java
@@ -471,7 +471,7 @@ implementation 'gr.datamation.mx:mx:22.8.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
-### Parse TARGET2 Message
+### Parse & Validate TARGET2 Message
 In case you need to handle TARGET2 (RTGS) messages, then you need to handle objects that extend the ISO20022 classes.
 ```java
 //Initialize the message object
@@ -563,9 +563,99 @@ Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [
 
 Please refer to [general auto replies](#auto-replies-2) for more details.
 
+# SEPA messages
+
+## SEPA-EPC Credit Transfer
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-CT demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.8.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.8.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-EPC-CT messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEpcCt fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10SepaEpcCt();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validateXML(new ByteArrayInputStream(validSepaPacs002String.getBytes()));
+//Fill the message with data from xml
+fiToFIPaymentStatusReport.parseXML(validSepaPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiToFIPaymentStatusReport.validate());  
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-CT Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10 fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10();
+
+//We fill the elements of the message object using setters
+fiToFIPaymentStatusReport.getMessage().setGrpHdr(new GroupHeader93());
+fiToFIPaymentStatusReport.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFIPaymentStatusReport.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validate(); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-CT message](src/main/java/com/paymentcomponents/swift/mx/sepa/epc/ct/ParseAndValidateSepaEpcCtMessage.java)
+
+### Supported SEPA-EPC-CT Message Types (2023 Version 1.0)
+
+| ISO20022 Message|Library Object class                                                   | Available in Demo |
+| --------------- |-------------------                                                    | :---------------: |
+| camt.027.001.07 | ClaimNonReceipt07SepaEpcCt                                            |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09ConfirmationPositiveReplyCamt087SepaEpcCt  |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyCamt027SepaEpcCt              |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyCamt087SepaEpcCt              |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyRecallSepaEpcCt               |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyRfroSepaEpcCt                 |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09PositiveReplyCamt027SepaEpcCt              |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09PositiveReplyCamt087SepaEpcCt              |                   |
+| camt.056.001.08 | FIToFIPaymentCancellationRequest08RecallSepaEpcCt                     |                   |
+| camt.056.001.08 | FIToFIPaymentCancellationRequest08RfroSepaEpcCt                       |                   |
+| camt.087.001.06 | RequestToModifyPayment06SepaEpcCt                                     |                   |
+| pacs.002.001.10 | FIToFIPaymentStatusReport10SepaEpcCt                                  | &check;           |
+| pacs.004.001.09 | PaymentReturn09PositiveReplyRecallSepaEpcCt                           |                   |
+| pacs.004.001.09 | PaymentReturn09PositiveReplyRfroSepaEpcCt                             |                   |
+| pacs.004.001.09 | PaymentReturn09ReturnSepaEpcCt                                        |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08FcSepaEpcCt                             |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08RtiSepaEpcCt                            |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08SepaEpcCt                               |                   |
+| pacs.028.001.03 | FIToFIPaymentStatusRequest03InquirySepaEpcCt                          |                   |
+| pacs.028.001.03 | FIToFIPaymentStatusRequest03RecallSepaEpcCt                           |                   |
+| pacs.028.001.03 | FIToFIPaymentStatusRequest03RfroSepaEpcCt                             |                   |
+
 ## FedNow messages
 
-### Parse and Validate FedNow Message
+### Parse & Validate FedNow Message
 In case you need to handle FedNow messages, then you need to handle objects that extend the ISO20022 classes.
 ```java
 //Initialize the message object
@@ -660,7 +750,7 @@ Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found
 
 ## SIC/euroSIC messages
 
-### Parse and Validate SIC/euroSIC Message
+### Parse & Validate SIC/euroSIC Message
 
 ```java
  //Initialize the message object
