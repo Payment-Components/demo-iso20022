@@ -41,6 +41,13 @@
             <groupId>gr.datamation.mx</groupId>
             <artifactId>mx</artifactId>
             <version>${mx.version}</version>
+            <classifier>demo-sepa</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>gr.datamation.mx</groupId>
+            <artifactId>mx</artifactId>
+            <version>${mx.version}</version>
             <classifier>nec</classifier>
         </dependency>
 
