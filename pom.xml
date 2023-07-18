@@ -44,14 +44,6 @@
             <classifier>demo-sepa</classifier>
         </dependency>
 
-        <dependency>
-            <groupId>gr.datamation.mx</groupId>
-            <artifactId>mx</artifactId>
-            <version>${mx.version}</version>
-            <classifier>nec</classifier>
-        </dependency>
-
-
         <!-- Use jaxb2-maven-plugin when using java 1.9 or above -->
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
@@ -63,7 +55,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <mx.version>22.8.0</mx.version>
+        <mx.version>22.17.0</mx.version>
     </properties>
 
 </project>

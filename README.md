@@ -923,6 +923,76 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 | pacs.009.001.08  | PACS_009_COV            | MftDetailBahtnet01                              |
 
 
+## CGI-MP messages
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the TARGET2 (RTGS) demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.8.0</version>
+    <classifier>{CLIENT_CLASSIFIER}</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.8.0:{CLIENT_CLASSIFIER}@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate CGI-MP Message
+In case you need to handle CGI-MP messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+CustomerCreditTransferInitiation09RelayServiceCgiMp customerCreditTransfer = new CustomerCreditTransferInitiation09RelayServiceCgiMp();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = customerCreditTransfer.validateXML(new ByteArrayInputStream(validPain001String.getBytes()));
+//Fill the message with data from xml
+customerCreditTransfer.parseXML(validPain001String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(customerCreditTransfer.validate());  
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(customerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+
+### Construct CGI-MP Message
+```java
+//Initialize the message object
+CustomerCreditTransferInitiation09RelayServiceCgiMp customerCreditTransfer = new CustomerCreditTransferInitiation09RelayServiceCgiMp();
+
+//We fill the elements of the message object using setters
+customerCreditTransfer.getMessage().setGrpHdr(new GroupHeader85());
+customerCreditTransfer.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+customerCreditTransfer.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = customerCreditTransfer.validate(); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(customerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate CGI-MP message](https://gist.github.com/PaymentComponents/bcb63721ba2a598a2312c88d2939dc8c)
+
+### Supported CGI-MP Message Types
+
+| ISO20022 Message                | Library Object class                                  |
+|---------------------------------|-------------------------------------------------------|
+| pain.001.001.09.relay.service   | CustomerCreditTransferInitiation09RelayServiceCgiMp   |
+| pain.001.001.09.urgent.payments | CustomerCreditTransferInitiation09UrgentPaymentsCgiMp |
+
 ## More features are included in the paid version
 
 ### Auto Replies
