@@ -653,6 +653,87 @@ if (validationErrorList.isEmpty()) {
 | pacs.028.001.03 | FIToFIPaymentStatusRequest03RecallSepaEpcCt                           |                   |
 | pacs.028.001.03 | FIToFIPaymentStatusRequest03RfroSepaEpcCt                             |                   |
 
+## SEPA-EPC Direct Debit
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-DD demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.8.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.8.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-EPC-DD messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEpcDd fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10SepaEpcDd();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validateXML(new ByteArrayInputStream(validSepaPacs002String.getBytes()));
+//Fill the message with data from xml
+fiToFIPaymentStatusReport.parseXML(validSepaPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiToFIPaymentStatusReport.validate());  
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-DD Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10 fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10();
+
+//We fill the elements of the message object using setters
+fiToFIPaymentStatusReport.getMessage().setGrpHdr(new GroupHeader93());
+fiToFIPaymentStatusReport.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFIPaymentStatusReport.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validate(); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-DD message](https://gist.github.com/PaymentComponents/cdd6ebc01318ee07ad4f5ce7ad21fe88)
+
+### Supported SEPA-EPC-DD Message Types (2023 Version 1.0)
+
+| ISO20022 Message | Library Object class                 | Available in Demo |
+|------------------|--------------------------------------|:-----------------:|
+| pacs.002.001.10  | FIToFIPaymentStatusReport10SepaEpcDd |                   |
+| pacs.003.001.08  | FIToFICustomerDirectDebit08SepaEpcDd |                   |
+| pacs.004.001.09  | PaymentReturn09SepaEpcDd             |                   |
+| pacs.007.001.09  | FIToFIPaymentReversal09SepaEpcDd     |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                         | Reply Class                          | AutoReplies Class                               |
+|-----------------|-----------------|--------------------------------------|--------------------------------------|-------------------------------------------------|
+| pacs.003.001.08 | pacs.002.001.10 | FIToFIPaymentStatusReport10SepaEpcDd | FIToFIPaymentStatusReport10SepaEpcDd | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
+| pacs.003.001.08 | pacs.004.001.09 | FIToFIPaymentStatusReport10SepaEpcDd | PaymentReturn09SepaEpcDd             | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
+| pacs.003.001.08 | pacs.007.001.09 | FIToFIPaymentStatusReport10SepaEpcDd | FIToFIPaymentReversal09SepaEpcDd     | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
+
+Sample code for `FIToFICustomerDirectDebit08SepaEpcDdAutoReplies` can be
+found [here](https://gist.github.com/gantoniadispc14/961ea60d9bdfc6fdc3328ee798f607e5).
 ## FedNow messages
 
 ### Parse & Validate FedNow Message
