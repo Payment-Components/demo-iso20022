@@ -10,7 +10,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/22.8.0/mx-22.8.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/22.19.0/mx-22.19.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -28,7 +28,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.8.0</version>
+    <version>22.19.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -44,7 +44,7 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:22.8.0:demo@jar'
+implementation 'gr.datamation.mx:mx:22.19.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -235,13 +235,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.8.0</version>
+    <version>22.19.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.8.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:22.19.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -461,13 +461,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.8.0</version>
+    <version>22.19.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.8.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:22.19.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -574,13 +574,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.8.0</version>
+    <version>22.19.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.8.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -662,13 +662,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.8.0</version>
+    <version>22.19.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.8.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -734,6 +734,112 @@ if (validationErrorList.isEmpty()) {
 
 Sample code for `FIToFICustomerDirectDebit08SepaEpcDdAutoReplies` can be
 found [here](https://gist.github.com/gantoniadispc14/961ea60d9bdfc6fdc3328ee798f607e5).
+
+
+## SEPA-EΒΑ Credit Transfer
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EΒΑ-CT demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.19.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-ΕΒΑ-CT messages, there is a dedicated class for each message type.
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEbaCt fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10SepaEbaCt();
+//Validate against the xml schema
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validateXML(new ByteArrayInputStream(validSepaEbaCtPacs002String.getBytes()));
+
+//Fill the message with data from xml
+fIToFIPaymentStatusReport10.parseXML(validSepaEbaCtPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fIToFIPaymentStatusReport10.validate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-CT Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEbaCt fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10SepaEbaCt();
+
+//We fill the elements of the message object using setters
+fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new SCTGroupHeader91());
+fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-CT message](src/main/java/com/paymentcomponents/swift/mx/sepa/eba/ct/ParseAndValidateSepaEbaCtMessage.java)
+
+### Supported SEPA-EBA-CT Message Types
+
+| ISO20022 Message  | Library Object class                         | Available in Demo |
+|-------------------|----------------------------------------------|:-----------------:|
+| camt.027.001.07   | ClaimNonReceipt07SepaEbaCt                   |                   |
+| camt.029.001.09   | ResolutionOfInvestigation09SepaEbaCt         |                   |
+| camt.056.001.08   | FIToFIPaymentCancellationRequest08SepaEbaCt  |                   |
+| camt.087.001.06   | RequestToModifyPayment06SepaEbaCt            |                   |
+| pacs.002.001.10   | FIToFIPaymentStatusReport10SepaEbaCt         |      &check;      |
+| pacs.004.001.09   | PaymentReturn09ReturnSepaEbaCt               |                   |
+| pacs.008.001.08   | FIToFICustomerCreditTransfer08FcSepaEbaCt    |                   |
+| pacs.028.001.03   | FIToFIPaymentStatusRequest03InquirySepaEbaCt |                   |
+| SCTCvfBlkCredTrf  | CvfBulkCreditTransferSepaEbaCt               |     &check;       |
+| SCTIcfBlkCredTrf  | IcfBulkCreditTransferSepaEbaCt               |                   |
+| SCTIqfBlkCredTrf  | IqfBulkCreditTransferSepaEbaCt               |                   |
+| SCTOqfBlkCredTrf  | OqfBulkCreditTransferSepaEbaCt               |                   |
+| SCTPcfBlkCredTrf  | PcfBulkCreditTransferSepaEbaCt               |                   |
+| SCTQvfBlkCredTrf  | QvfBulkCreditTransferSepaEbaCt               |                   |
+| SCTRsfBlkCredTrf  | RsfBulkCreditTransferSepaEbaCt               |                   |
+| SCTScfBlkCredTrf  | ScfBulkCreditTransferSepaEbaCt               |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                                | Reply Class                                  | AutoReplies Class                                    |
+| --------------- |-----------------|---------------------------------------------|----------------------------------------------|------------------------------------------------------|
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEbaCt     | PaymentReturn09SepaEbaCt                     | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEbaCt     | FIToFIPaymentCancellationRequest08SepaEbaCt  | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | camt.027.001.07 | FIToFICustomerCreditTransfer08SepaEbaCt     | ClaimNonReceipt07SepaEbaCt                   | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | camt.087.001.06 | FIToFICustomerCreditTransfer08SepaEbaCt     | RequestToModifyPayment06SepaEbaCt            | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | pacs.028.001.03 | FIToFICustomerCreditTransfer08SepaEbaCt     | FIToFIPaymentStatusRequest03InquirySepaEbaCt | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08SepaEbaCt | ResolutionOfInvestigation09SepaEbaCt         | FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies |
+| camt.027.001.07 | camt.029.001.09 | ClaimNonReceipt07SepaEbaCt                  | ResolutionOfInvestigation09SepaEbaCt         | ClaimNonReceiptSepaEbaCtAutoReplies                  |
+| camt.087.001.06 | camt.029.001.09 | RequestToModifyPayment06SepaEbaCt           | ResolutionOfInvestigation09SepaEbaCt         | RequestToModifyPaymentSepaEbaCtAutoReplies           |
+
+Sample code for `FIToFICustomerCreditTransferSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/2b2a43d1ae5b8e25a8b93e2cc218e209).  
+Sample code for `FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/a99f2911e36f15f8454a1cc8ba647ef5).  
+Sample code for `ClaimNonReceiptSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9a45aa976da4343aaf35a42457b63dbb).
+Sample code for `RequestToModifyPaymentSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9ad2a36059d41f994c3cf30b648e24ff).
+
+Please refer to [general auto replies](#auto-replies-2) for more details.
+
 ## FedNow messages
 
 ### Parse & Validate FedNow Message
@@ -1013,13 +1119,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>22.8.0</version>
+    <version>22.19.0</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:22.8.0:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:22.19.0:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
