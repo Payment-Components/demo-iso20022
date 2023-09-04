@@ -735,6 +735,99 @@ if (validationErrorList.isEmpty()) {
 Sample code for `FIToFICustomerDirectDebit08SepaEpcDdAutoReplies` can be
 found [here](https://gist.github.com/gantoniadispc14/961ea60d9bdfc6fdc3328ee798f607e5).
 
+## SEPA-EPC Instant Payment
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-INST demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>23.00.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:23.00.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-EPC-INST messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08SepaEpcInst fiCustomerCreditTransfer08SepaEpcInst = new FIToFICustomerCreditTransfer08SepaEpcInst();
+//Validate against the xml schema
+ValidationErrorList validationErrorList = fiCustomerCreditTransfer08SepaEpcInst.validateXML(new ByteArrayInputStream(validSepaEpcInstPacs008string.getBytes()));
+//Fill the message with data from xml
+fiCustomerCreditTransfer08SepaEpcInst.parseXML(validSepaEpcInstPacs008string);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiCustomerCreditTransfer08SepaEpcInst.validate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println("Message is valid");
+    System.out.println(fiCustomerCreditTransfer08SepaEpcInst.convertToXML()); //Get the generated xml
+} else {
+     System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-INST Message
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08SepaEpcInst fIToFIPaymentStatusReport10 = new FIToFICustomerCreditTransfer08SepaEpcInst();
+
+//We fill the elements with the message object using setters
+fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new GroupHeader93());
+fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+     System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-INST message](https://gist.github.com/gantoniadispc14/ae339065b6ccbe47aa7b802633c12f24)
+
+### Supported SEPA-EPC-INST Message Types (2023 Version 1.0)
+
+| ISO20022 Message | Library Object class                                       | Available in Demo |
+|------------------|------------------------------------------------------------|:-----------------:|
+| pacs.008.001.08  | FIToFICustomerCreditTransfer08SepaEpcInst                  |                   |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10NegativeSepaEpcInst             |                   |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10PositiveSepaEpcInst             |                   |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03RecallSepaEpcInst              |                   |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03RfroSepaEpcInst                |                   |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03StatusInvestigationSepaEpcInst |                   |
+| pacs.004.001.09  | PaymentReturn09PosReRecalSepaEpcInst                       |                   |
+| pacs.004.001.09  | PaymentReturn09PosReRfroSepaEpcInst                        |                   |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08RecallSepaEpcInst        |                   |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08RfroSepaEpcInst          |                   |
+| camt.029.001.09  | ResolutionOfInvestigation09NegReRecallSepaEpcInst          |                   |
+| camt.029.001.09  | ResolutionOfInvestigation09NegReRfroSepaEpcInst            |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                                        | Reply Class                                         | AutoReplies Class                                  |
+|-----------------|-----------------|-----------------------------------------------------|-----------------------------------------------------|----------------------------------------------------|
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEpcInst           | PaymentReturn09PosReRecalSepaEpcInst                | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | pacs.002.001.10 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentStatusReport10PositiveSepaEpcInst      | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | pacs.002.001.10 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentStatusReport10NegativeSepaEpcInst      | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentCancellationRequest08RecallSepaEpcInst | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08SepaEpcInst           | ResolutionOfInvestigation09NegReRecallSepaEpcInst   | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| camt.056.001.08 | pacs.028.001.03 | FIToFIPaymentCancellationRequest08RecallSepaEpcInst | FIToFIPaymentStatusRequest03RecallSepaEpcInst       | FIToFIPaymentCancellationRequestEpcInstAutoReplies |
+
+Sample code for `FIToFICustomerCreditTransferSepaEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/c886fb5ef341241d90b003c88c7cc156).
+Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/6b9c63d2ddb0ee7b74b4d03408d8ff98).
 
 ## SEPA-EΒΑ Credit Transfer
 
@@ -859,7 +952,7 @@ if (validationErrorList.isEmpty()) {
 } else {
     System.out.println(validationErrorList);
 }
-```
+````
 
 ### Auto Parse and Validate FedNow Message
 ```java
