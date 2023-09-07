@@ -73,7 +73,6 @@ compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.8'
 compile group: 'io.github.classgraph', name: 'classgraph', version: '4.8.153'
 ```
 
-
 ## HOW-TO Use our SDK
 
 All ISO20022 messages are identified by a code id and a name. The code id (`FIToFIPmtStsRpt`) and the name (`FIToFIPaymentStatusReportV11`) are located in the .xsd file that describes the XML schema of each message. 
@@ -451,7 +450,6 @@ if (validationErrorList.isEmpty()) {
 | camt.053.001.08  | CAMT_053           | BankToCustomerStatement08            |
 | camt.053.001.08  | CAMT_053_AOS       | BankToCustomerStatement08            |
 
-
 ## TARGET2 (RTGS) messages
 
 ### SDK Setup
@@ -563,376 +561,6 @@ Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [
 
 Please refer to [general auto replies](#auto-replies-2) for more details.
 
-# SEPA messages
-
-## SEPA-EPC Credit Transfer
-
-### SDK Setup
-#### Maven
-```xml
-<!-- Import the SEPA-EPC-CT demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>22.19.0</version>
-    <classifier>demo-sepa</classifier>
-</dependency>
-```
-#### Gradle
-```groovy
-implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
-```
-Please refer to [General SDK Setup](#SDK-setup) for more details.
-
-### Parse & Validate SEPA Message
-In case you need to handle SEPA-EPC-CT messages, then you need to handle objects that extend the ISO20022 classes.
-```java
-//Initialize the message object
-FIToFIPaymentStatusReport10SepaEpcCt fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10SepaEpcCt();
-//Validate against the xml schema. We can also exit in case of errors in this step.
-ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validateXML(new ByteArrayInputStream(validSepaPacs002String.getBytes()));
-//Fill the message with data from xml
-fiToFIPaymentStatusReport.parseXML(validSepaPacs002String);
-//Validate both the xml schema and rules
-validationErrorList.addAll(fiToFIPaymentStatusReport.validate());  
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
-} else {
-    System.out.println(validationErrorList);
-}
-```
-
-### Construct SEPA-EPC-CT Message
-```java
-//Initialize the message object
-FIToFIPaymentStatusReport10 fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10();
-
-//We fill the elements of the message object using setters
-fiToFIPaymentStatusReport.getMessage().setGrpHdr(new GroupHeader93());
-fiToFIPaymentStatusReport.getMessage().getGrpHdr().setMsgId("1234");
-//or setElement()
-fiToFIPaymentStatusReport.setElement("GrpHdr/MsgId", "1234");
-
-//Perform validation
-ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validate(); 
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
-} else {
-    System.out.println(validationErrorList);
-}
-```
-
-### Code samples
-[Parse and validate SEPA-EPC-CT message](src/main/java/com/paymentcomponents/swift/mx/sepa/epc/ct/ParseAndValidateSepaEpcCtMessage.java)
-
-### Supported SEPA-EPC-CT Message Types (2023 Version 1.0)
-
-| ISO20022 Message|Library Object class                                                   | Available in Demo |
-| --------------- |-------------------                                                    | :---------------: |
-| camt.027.001.07 | ClaimNonReceipt07SepaEpcCt                                            |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09ConfirmationPositiveReplyCamt087SepaEpcCt  |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyCamt027SepaEpcCt              |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyCamt087SepaEpcCt              |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyRecallSepaEpcCt               |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyRfroSepaEpcCt                 |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09PositiveReplyCamt027SepaEpcCt              |                   |
-| camt.029.001.09 | ResolutionOfInvestigation09PositiveReplyCamt087SepaEpcCt              |                   |
-| camt.056.001.08 | FIToFIPaymentCancellationRequest08RecallSepaEpcCt                     |                   |
-| camt.056.001.08 | FIToFIPaymentCancellationRequest08RfroSepaEpcCt                       |                   |
-| camt.087.001.06 | RequestToModifyPayment06SepaEpcCt                                     |                   |
-| pacs.002.001.10 | FIToFIPaymentStatusReport10SepaEpcCt                                  | &check;           |
-| pacs.004.001.09 | PaymentReturn09PositiveReplyRecallSepaEpcCt                           |                   |
-| pacs.004.001.09 | PaymentReturn09PositiveReplyRfroSepaEpcCt                             |                   |
-| pacs.004.001.09 | PaymentReturn09ReturnSepaEpcCt                                        |                   |
-| pacs.008.001.08 | FIToFICustomerCreditTransfer08FcSepaEpcCt                             |                   |
-| pacs.008.001.08 | FIToFICustomerCreditTransfer08RtiSepaEpcCt                            |                   |
-| pacs.008.001.08 | FIToFICustomerCreditTransfer08SepaEpcCt                               |                   |
-| pacs.028.001.03 | FIToFIPaymentStatusRequest03InquirySepaEpcCt                          |                   |
-| pacs.028.001.03 | FIToFIPaymentStatusRequest03RecallSepaEpcCt                           |                   |
-| pacs.028.001.03 | FIToFIPaymentStatusRequest03RfroSepaEpcCt                             |                   |
-
-## SEPA-EPC Direct Debit
-
-### SDK Setup
-#### Maven
-```xml
-<!-- Import the SEPA-EPC-DD demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>22.19.0</version>
-    <classifier>demo-sepa</classifier>
-</dependency>
-```
-#### Gradle
-```groovy
-implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
-```
-Please refer to [General SDK Setup](#SDK-setup) for more details.
-
-### Parse & Validate SEPA Message
-In case you need to handle SEPA-EPC-DD messages, then you need to handle objects that extend the ISO20022 classes.
-```java
-//Initialize the message object
-FIToFIPaymentStatusReport10SepaEpcDd fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10SepaEpcDd();
-//Validate against the xml schema. We can also exit in case of errors in this step.
-ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validateXML(new ByteArrayInputStream(validSepaPacs002String.getBytes()));
-//Fill the message with data from xml
-fiToFIPaymentStatusReport.parseXML(validSepaPacs002String);
-//Validate both the xml schema and rules
-validationErrorList.addAll(fiToFIPaymentStatusReport.validate());  
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
-} else {
-    System.out.println(validationErrorList);
-}
-```
-
-### Construct SEPA-EPC-DD Message
-```java
-//Initialize the message object
-FIToFIPaymentStatusReport10 fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10();
-
-//We fill the elements of the message object using setters
-fiToFIPaymentStatusReport.getMessage().setGrpHdr(new GroupHeader93());
-fiToFIPaymentStatusReport.getMessage().getGrpHdr().setMsgId("1234");
-//or setElement()
-fiToFIPaymentStatusReport.setElement("GrpHdr/MsgId", "1234");
-
-//Perform validation
-ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validate(); 
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
-} else {
-    System.out.println(validationErrorList);
-}
-```
-
-### Code samples
-[Parse and validate SEPA-EPC-DD message](https://gist.github.com/PaymentComponents/cdd6ebc01318ee07ad4f5ce7ad21fe88)
-
-### Supported SEPA-EPC-DD Message Types (2023 Version 1.0)
-
-| ISO20022 Message | Library Object class                 | Available in Demo |
-|------------------|--------------------------------------|:-----------------:|
-| pacs.002.001.10  | FIToFIPaymentStatusReport10SepaEpcDd |                   |
-| pacs.003.001.08  | FIToFICustomerDirectDebit08SepaEpcDd |                   |
-| pacs.004.001.09  | PaymentReturn09SepaEpcDd             |                   |
-| pacs.007.001.09  | FIToFIPaymentReversal09SepaEpcDd     |                   |
-
-### Auto replies
-
-| Source Message  | Reply Message   | Source Class                         | Reply Class                          | AutoReplies Class                               |
-|-----------------|-----------------|--------------------------------------|--------------------------------------|-------------------------------------------------|
-| pacs.003.001.08 | pacs.002.001.10 | FIToFIPaymentStatusReport10SepaEpcDd | FIToFIPaymentStatusReport10SepaEpcDd | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
-| pacs.003.001.08 | pacs.004.001.09 | FIToFIPaymentStatusReport10SepaEpcDd | PaymentReturn09SepaEpcDd             | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
-| pacs.003.001.08 | pacs.007.001.09 | FIToFIPaymentStatusReport10SepaEpcDd | FIToFIPaymentReversal09SepaEpcDd     | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
-
-Sample code for `FIToFICustomerDirectDebit08SepaEpcDdAutoReplies` can be
-found [here](https://gist.github.com/gantoniadispc14/961ea60d9bdfc6fdc3328ee798f607e5).
-
-## SEPA-EPC Instant Payment
-
-### SDK Setup
-#### Maven
-```xml
-<!-- Import the SEPA-EPC-INST demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>23.00.0</version>
-    <classifier>demo-sepa</classifier>
-</dependency>
-```
-#### Gradle
-```groovy
-implementation 'gr.datamation.mx:mx:23.00.0:demo-sepa@jar'
-```
-Please refer to [General SDK Setup](#SDK-setup) for more details.
-
-### Parse & Validate SEPA Message
-In case you need to handle SEPA-EPC-INST messages, then you need to handle objects that extend the ISO20022 classes.
-```java
-//Initialize the message object
-FIToFICustomerCreditTransfer08SepaEpcInst fiCustomerCreditTransfer08SepaEpcInst = new FIToFICustomerCreditTransfer08SepaEpcInst();
-//Validate against the xml schema
-ValidationErrorList validationErrorList = fiCustomerCreditTransfer08SepaEpcInst.validateXML(new ByteArrayInputStream(validSepaEpcInstPacs008string.getBytes()));
-//Fill the message with data from xml
-fiCustomerCreditTransfer08SepaEpcInst.parseXML(validSepaEpcInstPacs008string);
-//Validate both the xml schema and rules
-validationErrorList.addAll(fiCustomerCreditTransfer08SepaEpcInst.validate());
-
-if (validationErrorList.isEmpty()) {
-    System.out.println("Message is valid");
-    System.out.println(fiCustomerCreditTransfer08SepaEpcInst.convertToXML()); //Get the generated xml
-} else {
-     System.out.println(validationErrorList);
-}
-```
-
-### Construct SEPA-EPC-INST Message
-```java
-//Initialize the message object
-FIToFICustomerCreditTransfer08SepaEpcInst fIToFIPaymentStatusReport10 = new FIToFICustomerCreditTransfer08SepaEpcInst();
-
-//We fill the elements with the message object using setters
-fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new GroupHeader93());
-fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
-//or setElement()
-fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
-
-//Perform validation
-ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
-} else {
-     System.out.println(validationErrorList);
-}
-```
-
-### Code samples
-[Parse and validate SEPA-EPC-INST message](https://gist.github.com/gantoniadispc14/ae339065b6ccbe47aa7b802633c12f24)
-
-### Supported SEPA-EPC-INST Message Types (2023 Version 1.0)
-
-| ISO20022 Message | Library Object class                                       | Available in Demo |
-|------------------|------------------------------------------------------------|:-----------------:|
-| pacs.008.001.08  | FIToFICustomerCreditTransfer08SepaEpcInst                  |                   |
-| pacs.002.001.10  | FIToFIPaymentStatusReport10NegativeSepaEpcInst             |                   |
-| pacs.002.001.10  | FIToFIPaymentStatusReport10PositiveSepaEpcInst             |                   |
-| pacs.028.001.03  | FIToFIPaymentStatusRequest03RecallSepaEpcInst              |                   |
-| pacs.028.001.03  | FIToFIPaymentStatusRequest03RfroSepaEpcInst                |                   |
-| pacs.028.001.03  | FIToFIPaymentStatusRequest03StatusInvestigationSepaEpcInst |                   |
-| pacs.004.001.09  | PaymentReturn09PosReRecalSepaEpcInst                       |                   |
-| pacs.004.001.09  | PaymentReturn09PosReRfroSepaEpcInst                        |                   |
-| camt.056.001.08  | FIToFIPaymentCancellationRequest08RecallSepaEpcInst        |                   |
-| camt.056.001.08  | FIToFIPaymentCancellationRequest08RfroSepaEpcInst          |                   |
-| camt.029.001.09  | ResolutionOfInvestigation09NegReRecallSepaEpcInst          |                   |
-| camt.029.001.09  | ResolutionOfInvestigation09NegReRfroSepaEpcInst            |                   |
-
-### Auto replies
-
-| Source Message  | Reply Message   | Source Class                                        | Reply Class                                         | AutoReplies Class                                  |
-|-----------------|-----------------|-----------------------------------------------------|-----------------------------------------------------|----------------------------------------------------|
-| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEpcInst           | PaymentReturn09PosReRecalSepaEpcInst                | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
-| pacs.008.001.08 | pacs.002.001.10 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentStatusReport10PositiveSepaEpcInst      | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
-| pacs.008.001.08 | pacs.002.001.10 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentStatusReport10NegativeSepaEpcInst      | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
-| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentCancellationRequest08RecallSepaEpcInst | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
-| pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08SepaEpcInst           | ResolutionOfInvestigation09NegReRecallSepaEpcInst   | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
-| camt.056.001.08 | pacs.028.001.03 | FIToFIPaymentCancellationRequest08RecallSepaEpcInst | FIToFIPaymentStatusRequest03RecallSepaEpcInst       | FIToFIPaymentCancellationRequestEpcInstAutoReplies |
-
-Sample code for `FIToFICustomerCreditTransferSepaEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/c886fb5ef341241d90b003c88c7cc156).
-Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/6b9c63d2ddb0ee7b74b4d03408d8ff98).
-
-## SEPA-EΒΑ Credit Transfer
-
-### SDK Setup
-#### Maven
-```xml
-<!-- Import the SEPA-EΒΑ-CT demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>22.19.0</version>
-    <classifier>demo-sepa</classifier>
-</dependency>
-```
-#### Gradle
-```groovy
-implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
-```
-Please refer to [General SDK Setup](#SDK-setup) for more details.
-
-### Parse & Validate SEPA Message
-In case you need to handle SEPA-ΕΒΑ-CT messages, there is a dedicated class for each message type.
-```java
-//Initialize the message object
-FIToFIPaymentStatusReport10SepaEbaCt fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10SepaEbaCt();
-//Validate against the xml schema
-ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validateXML(new ByteArrayInputStream(validSepaEbaCtPacs002String.getBytes()));
-
-//Fill the message with data from xml
-fIToFIPaymentStatusReport10.parseXML(validSepaEbaCtPacs002String);
-//Validate both the xml schema and rules
-validationErrorList.addAll(fIToFIPaymentStatusReport10.validate());
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
-} else {
-    System.out.println(validationErrorList);
-}
-```
-
-### Construct SEPA-EPC-CT Message
-```java
-//Initialize the message object
-FIToFIPaymentStatusReport10SepaEbaCt fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10SepaEbaCt();
-
-//We fill the elements of the message object using setters
-fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new SCTGroupHeader91());
-fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
-//or setElement()
-fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
-
-//Perform validation
-ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
-
-if (validationErrorList.isEmpty()) {
-    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
-} else {
-    System.out.println(validationErrorList);
-}
-```
-
-### Code samples
-[Parse and validate SEPA-EPC-CT message](src/main/java/com/paymentcomponents/swift/mx/sepa/eba/ct/ParseAndValidateSepaEbaCtMessage.java)
-
-### Supported SEPA-EBA-CT Message Types
-
-| ISO20022 Message  | Library Object class                         | Available in Demo |
-|-------------------|----------------------------------------------|:-----------------:|
-| camt.027.001.07   | ClaimNonReceipt07SepaEbaCt                   |                   |
-| camt.029.001.09   | ResolutionOfInvestigation09SepaEbaCt         |                   |
-| camt.056.001.08   | FIToFIPaymentCancellationRequest08SepaEbaCt  |                   |
-| camt.087.001.06   | RequestToModifyPayment06SepaEbaCt            |                   |
-| pacs.002.001.10   | FIToFIPaymentStatusReport10SepaEbaCt         |      &check;      |
-| pacs.004.001.09   | PaymentReturn09ReturnSepaEbaCt               |                   |
-| pacs.008.001.08   | FIToFICustomerCreditTransfer08FcSepaEbaCt    |                   |
-| pacs.028.001.03   | FIToFIPaymentStatusRequest03InquirySepaEbaCt |                   |
-| SCTCvfBlkCredTrf  | CvfBulkCreditTransferSepaEbaCt               |     &check;       |
-| SCTIcfBlkCredTrf  | IcfBulkCreditTransferSepaEbaCt               |                   |
-| SCTIqfBlkCredTrf  | IqfBulkCreditTransferSepaEbaCt               |                   |
-| SCTOqfBlkCredTrf  | OqfBulkCreditTransferSepaEbaCt               |                   |
-| SCTPcfBlkCredTrf  | PcfBulkCreditTransferSepaEbaCt               |                   |
-| SCTQvfBlkCredTrf  | QvfBulkCreditTransferSepaEbaCt               |                   |
-| SCTRsfBlkCredTrf  | RsfBulkCreditTransferSepaEbaCt               |                   |
-| SCTScfBlkCredTrf  | ScfBulkCreditTransferSepaEbaCt               |                   |
-
-### Auto replies
-
-| Source Message  | Reply Message   | Source Class                                | Reply Class                                  | AutoReplies Class                                    |
-| --------------- |-----------------|---------------------------------------------|----------------------------------------------|------------------------------------------------------|
-| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEbaCt     | PaymentReturn09SepaEbaCt                     | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
-| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEbaCt     | FIToFIPaymentCancellationRequest08SepaEbaCt  | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
-| pacs.008.001.08 | camt.027.001.07 | FIToFICustomerCreditTransfer08SepaEbaCt     | ClaimNonReceipt07SepaEbaCt                   | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
-| pacs.008.001.08 | camt.087.001.06 | FIToFICustomerCreditTransfer08SepaEbaCt     | RequestToModifyPayment06SepaEbaCt            | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
-| pacs.008.001.08 | pacs.028.001.03 | FIToFICustomerCreditTransfer08SepaEbaCt     | FIToFIPaymentStatusRequest03InquirySepaEbaCt | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
-| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08SepaEbaCt | ResolutionOfInvestigation09SepaEbaCt         | FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies |
-| camt.027.001.07 | camt.029.001.09 | ClaimNonReceipt07SepaEbaCt                  | ResolutionOfInvestigation09SepaEbaCt         | ClaimNonReceiptSepaEbaCtAutoReplies                  |
-| camt.087.001.06 | camt.029.001.09 | RequestToModifyPayment06SepaEbaCt           | ResolutionOfInvestigation09SepaEbaCt         | RequestToModifyPaymentSepaEbaCtAutoReplies           |
-
-Sample code for `FIToFICustomerCreditTransferSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/2b2a43d1ae5b8e25a8b93e2cc218e209).  
-Sample code for `FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/a99f2911e36f15f8454a1cc8ba647ef5).  
-Sample code for `ClaimNonReceiptSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9a45aa976da4343aaf35a42457b63dbb).
-Sample code for `RequestToModifyPaymentSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9ad2a36059d41f994c3cf30b648e24ff).
-
-Please refer to [general auto replies](#auto-replies-2) for more details.
-
 ## FedNow messages
 
 ### Parse & Validate FedNow Message
@@ -1026,7 +654,6 @@ if (validationErrorList.isEmpty()) {
 
 Sample code for `FIToFICustomerCreditTransferFednowAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/a03821408d286cbf55e1e5ad66b83f51).  
 Sample code for `FIToFIPaymentCancellationRequestFednowAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/8cebbc6a7a63426b2f225e07edc399b5).
-
 
 ## SIC/euroSIC messages
 
@@ -1202,7 +829,6 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 | pacs.009.001.08  | PACS_009_CORE           | RequestToModifyPayment06Bahtnet                 |
 | pacs.009.001.08  | PACS_009_COV            | MftDetailBahtnet01                              |
 
-
 ## CGI-MP messages
 
 ### SDK Setup
@@ -1272,6 +898,398 @@ if (validationErrorList.isEmpty()) {
 |---------------------------------|-------------------------------------------------------|
 | pain.001.001.09.relay.service   | CustomerCreditTransferInitiation09RelayServiceCgiMp   |
 | pain.001.001.09.urgent.payments | CustomerCreditTransferInitiation09UrgentPaymentsCgiMp |
+
+## SEPA-EPC Credit Transfer
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-CT demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.19.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-EPC-CT messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEpcCt fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10SepaEpcCt();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validateXML(new ByteArrayInputStream(validSepaPacs002String.getBytes()));
+//Fill the message with data from xml
+fiToFIPaymentStatusReport.parseXML(validSepaPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiToFIPaymentStatusReport.validate());  
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-CT Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10 fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10();
+
+//We fill the elements of the message object using setters
+fiToFIPaymentStatusReport.getMessage().setGrpHdr(new GroupHeader93());
+fiToFIPaymentStatusReport.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFIPaymentStatusReport.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validate(); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-CT message](src/main/java/com/paymentcomponents/swift/mx/sepa/epc/ct/ParseAndValidateSepaEpcCtMessage.java)
+
+### Supported SEPA-EPC-CT Message Types (2023 Version 1.0)
+
+| ISO20022 Message|Library Object class                                                   | Available in Demo |
+| --------------- |-------------------                                                    | :---------------: |
+| camt.027.001.07 | ClaimNonReceipt07SepaEpcCt                                            |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09ConfirmationPositiveReplyCamt087SepaEpcCt  |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyCamt027SepaEpcCt              |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyCamt087SepaEpcCt              |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyRecallSepaEpcCt               |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09NegativeReplyRfroSepaEpcCt                 |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09PositiveReplyCamt027SepaEpcCt              |                   |
+| camt.029.001.09 | ResolutionOfInvestigation09PositiveReplyCamt087SepaEpcCt              |                   |
+| camt.056.001.08 | FIToFIPaymentCancellationRequest08RecallSepaEpcCt                     |                   |
+| camt.056.001.08 | FIToFIPaymentCancellationRequest08RfroSepaEpcCt                       |                   |
+| camt.087.001.06 | RequestToModifyPayment06SepaEpcCt                                     |                   |
+| pacs.002.001.10 | FIToFIPaymentStatusReport10SepaEpcCt                                  | &check;           |
+| pacs.004.001.09 | PaymentReturn09PositiveReplyRecallSepaEpcCt                           |                   |
+| pacs.004.001.09 | PaymentReturn09PositiveReplyRfroSepaEpcCt                             |                   |
+| pacs.004.001.09 | PaymentReturn09ReturnSepaEpcCt                                        |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08FcSepaEpcCt                             |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08RtiSepaEpcCt                            |                   |
+| pacs.008.001.08 | FIToFICustomerCreditTransfer08SepaEpcCt                               |                   |
+| pacs.028.001.03 | FIToFIPaymentStatusRequest03InquirySepaEpcCt                          |                   |
+| pacs.028.001.03 | FIToFIPaymentStatusRequest03RecallSepaEpcCt                           |                   |
+| pacs.028.001.03 | FIToFIPaymentStatusRequest03RfroSepaEpcCt                             |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                                | Reply Class                                  | AutoReplies Class                                                      |
+| --------------- |-----------------|---------------------------------------------------|----------------------------------------------------------|------------------------------------------------------|
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEpcCt           | PaymentReturn09ReturnSepaEpcCt                           | FIToFICustomerCreditTransferSepaEpcCtAutoReplies     |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEpcCt           | FIToFIPaymentCancellationRequest08RecallSepaEpcCt        | FIToFICustomerCreditTransferSepaEpcCtAutoReplies     |
+| pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08SepaEpcCt           | ResolutionOfInvestigation09NegativeReplyRecallSepaEpcCt  | FIToFICustomerCreditTransferSepaEpcCtAutoReplies     |
+| pacs.008.001.08 | camt.027.001.07 | FIToFICustomerCreditTransfer08SepaEpcCt           | ClaimNonReceipt07SepaEpcCt                               | FIToFICustomerCreditTransferSepaEpcCtAutoReplies     |
+| pacs.008.001.08 | camt.087.001.06 | FIToFICustomerCreditTransfer08SepaEpcCt           | RequestToModifyPayment06SepaEpcCt                        | FIToFICustomerCreditTransferSepaEpcCtAutoReplies     |
+| pacs.008.001.08 | pacs.028.001.03 | FIToFICustomerCreditTransfer08SepaEpcCt           | FIToFIPaymentStatusRequest03InquirySepaEpcCt             | FIToFICustomerCreditTransferSepaEpcCtAutoReplies     |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08RecallSepaEpcCt | ResolutionOfInvestigation09NegativeReplyRecallSepaEpcCt  | FIToFIPaymentCancellationRequestSepaEpcCtAutoReplies |
+| camt.027.001.07 | camt.029.001.09 | ClaimNonReceipt07SepaEpcCt                        | ResolutionOfInvestigation09NegativeReplyRecallSepaEpcCt  | ClaimNonReceiptSepaEpcCtAutoReplies                           |
+| camt.027.001.07 | camt.029.001.09 | ClaimNonReceipt07SepaEpcCt                        | ResolutionOfInvestigation09PositiveReplyCamt027SepaEpcCt | ClaimNonReceiptSepaEpcCtAutoReplies                           |
+| camt.087.001.06 | camt.029.001.09 | RequestToModifyPayment06SepaEpcCt                 | ResolutionOfInvestigation09NegativeReplyCamt087SepaEpcCt | ClaimNonReceiptSepaEpcCtAutoReplies                           |
+| camt.087.001.06 | camt.029.001.09 | RequestToModifyPayment06SepaEpcCt                 | ResolutionOfInvestigation09PositiveReplyCamt087SepaEpcCt  | RequestToModifyPaymentSepaEpcCtAutoReplies                    |
+
+
+Sample code for `FIToFICustomerCreditTransferSepaEpcCtAutoReplies` can be found [here](https://gist.github.com/Gizpc14/c217fae5b9b707fe16fce735378180aa).  
+Sample code for `FIToFIPaymentCancellationRequestSepaEpcCtAutoReplies` can be found [here](https://gist.github.com/Gizpc14/b420e035aef83c53097ba596333d831f).  
+Sample code for `ClaimNonReceiptSepaEpcCtAutoReplies` can be found [here](https://gist.github.com/Gizpc14/330c8b2613a08811fb48d512fb204131).  
+Sample code for `RequestToModifyPaymentSepaEpcCtAutoReplies` can be found [here](https://gist.github.com/Gizpc14/d2afcc314953bfdfd8af4c5e62c8b536).
+
+Please refer to [general auto replies](#auto-replies-2) for more details.
+
+## SEPA-EPC Direct Debit
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-DD demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.19.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-EPC-DD messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEpcDd fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10SepaEpcDd();
+//Validate against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validateXML(new ByteArrayInputStream(validSepaPacs002String.getBytes()));
+//Fill the message with data from xml
+fiToFIPaymentStatusReport.parseXML(validSepaPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiToFIPaymentStatusReport.validate());  
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-DD Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10 fiToFIPaymentStatusReport = new FIToFIPaymentStatusReport10();
+
+//We fill the elements of the message object using setters
+fiToFIPaymentStatusReport.getMessage().setGrpHdr(new GroupHeader93());
+fiToFIPaymentStatusReport.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fiToFIPaymentStatusReport.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fiToFIPaymentStatusReport.validate(); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFIPaymentStatusReport.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-DD message](https://gist.github.com/PaymentComponents/cdd6ebc01318ee07ad4f5ce7ad21fe88)
+
+### Supported SEPA-EPC-DD Message Types (2023 Version 1.0)
+
+| ISO20022 Message | Library Object class                 | Available in Demo |
+|------------------|--------------------------------------|:-----------------:|
+| pacs.002.001.10  | FIToFIPaymentStatusReport10SepaEpcDd |                   |
+| pacs.003.001.08  | FIToFICustomerDirectDebit08SepaEpcDd |                   |
+| pacs.004.001.09  | PaymentReturn09SepaEpcDd             |                   |
+| pacs.007.001.09  | FIToFIPaymentReversal09SepaEpcDd     |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                         | Reply Class                          | AutoReplies Class                               |
+|-----------------|-----------------|--------------------------------------|--------------------------------------|-------------------------------------------------|
+| pacs.003.001.08 | pacs.002.001.10 | FIToFIPaymentStatusReport10SepaEpcDd | FIToFIPaymentStatusReport10SepaEpcDd | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
+| pacs.003.001.08 | pacs.004.001.09 | FIToFIPaymentStatusReport10SepaEpcDd | PaymentReturn09SepaEpcDd             | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
+| pacs.003.001.08 | pacs.007.001.09 | FIToFIPaymentStatusReport10SepaEpcDd | FIToFIPaymentReversal09SepaEpcDd     | FIToFICustomerDirectDebit08SepaEpcDdAutoReplies |
+
+Sample code for `FIToFICustomerDirectDebit08SepaEpcDdAutoReplies` can be
+found [here](https://gist.github.com/gantoniadispc14/961ea60d9bdfc6fdc3328ee798f607e5).
+
+## SEPA-EPC Instant Payment
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-INST demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>23.00.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:23.00.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-EPC-INST messages, then you need to handle objects that extend the ISO20022 classes.
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08SepaEpcInst fiCustomerCreditTransfer08SepaEpcInst = new FIToFICustomerCreditTransfer08SepaEpcInst();
+//Validate against the xml schema
+ValidationErrorList validationErrorList = fiCustomerCreditTransfer08SepaEpcInst.validateXML(new ByteArrayInputStream(validSepaEpcInstPacs008string.getBytes()));
+//Fill the message with data from xml
+fiCustomerCreditTransfer08SepaEpcInst.parseXML(validSepaEpcInstPacs008string);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fiCustomerCreditTransfer08SepaEpcInst.validate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println("Message is valid");
+    System.out.println(fiCustomerCreditTransfer08SepaEpcInst.convertToXML()); //Get the generated xml
+} else {
+     System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EPC-INST Message
+```java
+//Initialize the message object
+FIToFICustomerCreditTransfer08SepaEpcInst fIToFIPaymentStatusReport10 = new FIToFICustomerCreditTransfer08SepaEpcInst();
+
+//We fill the elements with the message object using setters
+fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new GroupHeader93());
+fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+     System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-INST message](https://gist.github.com/gantoniadispc14/ae339065b6ccbe47aa7b802633c12f24)
+
+### Supported SEPA-EPC-INST Message Types (2023 Version 1.0)
+
+| ISO20022 Message | Library Object class                                       | Available in Demo |
+|------------------|------------------------------------------------------------|:-----------------:|
+| pacs.008.001.08  | FIToFICustomerCreditTransfer08SepaEpcInst                  |                   |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10NegativeSepaEpcInst             |                   |
+| pacs.002.001.10  | FIToFIPaymentStatusReport10PositiveSepaEpcInst             |                   |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03RecallSepaEpcInst              |                   |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03RfroSepaEpcInst                |                   |
+| pacs.028.001.03  | FIToFIPaymentStatusRequest03StatusInvestigationSepaEpcInst |                   |
+| pacs.004.001.09  | PaymentReturn09PosReRecalSepaEpcInst                       |                   |
+| pacs.004.001.09  | PaymentReturn09PosReRfroSepaEpcInst                        |                   |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08RecallSepaEpcInst        |                   |
+| camt.056.001.08  | FIToFIPaymentCancellationRequest08RfroSepaEpcInst          |                   |
+| camt.029.001.09  | ResolutionOfInvestigation09NegReRecallSepaEpcInst          |                   |
+| camt.029.001.09  | ResolutionOfInvestigation09NegReRfroSepaEpcInst            |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                                        | Reply Class                                         | AutoReplies Class                                  |
+|-----------------|-----------------|-----------------------------------------------------|-----------------------------------------------------|----------------------------------------------------|
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEpcInst           | PaymentReturn09PosReRecalSepaEpcInst                | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | pacs.002.001.10 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentStatusReport10PositiveSepaEpcInst      | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | pacs.002.001.10 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentStatusReport10NegativeSepaEpcInst      | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEpcInst           | FIToFIPaymentCancellationRequest08RecallSepaEpcInst | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| pacs.008.001.08 | camt.029.001.09 | FIToFICustomerCreditTransfer08SepaEpcInst           | ResolutionOfInvestigation09NegReRecallSepaEpcInst   | FIToFICustomerCreditTransferSepaEpcInstAutoReplies |
+| camt.056.001.08 | pacs.028.001.03 | FIToFIPaymentCancellationRequest08RecallSepaEpcInst | FIToFIPaymentStatusRequest03RecallSepaEpcInst       | FIToFIPaymentCancellationRequestEpcInstAutoReplies |
+
+Sample code for `FIToFICustomerCreditTransferSepaEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/c886fb5ef341241d90b003c88c7cc156).  
+Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/6b9c63d2ddb0ee7b74b4d03408d8ff98).
+
+## SEPA-EΒΑ Credit Transfer
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EΒΑ-CT demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>22.19.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:22.19.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-ΕΒΑ-CT messages, there is a dedicated class for each message type.
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEbaCt fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10SepaEbaCt();
+//Validate against the xml schema
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validateXML(new ByteArrayInputStream(validSepaEbaCtPacs002String.getBytes()));
+
+//Fill the message with data from xml
+fIToFIPaymentStatusReport10.parseXML(validSepaEbaCtPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fIToFIPaymentStatusReport10.validate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-EBA-CT Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10SepaEbaCt fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10SepaEbaCt();
+
+//We fill the elements of the message object using setters
+fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new SCTGroupHeader91());
+fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-EPC-CT message](src/main/java/com/paymentcomponents/swift/mx/sepa/eba/ct/ParseAndValidateSepaEbaCtMessage.java)
+
+### Supported SEPA-EBA-CT Message Types
+
+| ISO20022 Message  | Library Object class                         | Available in Demo |
+|-------------------|----------------------------------------------|:-----------------:|
+| camt.027.001.07   | ClaimNonReceipt07SepaEbaCt                   |                   |
+| camt.029.001.09   | ResolutionOfInvestigation09SepaEbaCt         |                   |
+| camt.056.001.08   | FIToFIPaymentCancellationRequest08SepaEbaCt  |                   |
+| camt.087.001.06   | RequestToModifyPayment06SepaEbaCt            |                   |
+| pacs.002.001.10   | FIToFIPaymentStatusReport10SepaEbaCt         |      &check;      |
+| pacs.004.001.09   | PaymentReturn09ReturnSepaEbaCt               |                   |
+| pacs.008.001.08   | FIToFICustomerCreditTransfer08FcSepaEbaCt    |                   |
+| pacs.028.001.03   | FIToFIPaymentStatusRequest03InquirySepaEbaCt |                   |
+| SCTCvfBlkCredTrf  | CvfBulkCreditTransferSepaEbaCt               |     &check;       |
+| SCTIcfBlkCredTrf  | IcfBulkCreditTransferSepaEbaCt               |                   |
+| SCTIqfBlkCredTrf  | IqfBulkCreditTransferSepaEbaCt               |                   |
+| SCTOqfBlkCredTrf  | OqfBulkCreditTransferSepaEbaCt               |                   |
+| SCTPcfBlkCredTrf  | PcfBulkCreditTransferSepaEbaCt               |                   |
+| SCTQvfBlkCredTrf  | QvfBulkCreditTransferSepaEbaCt               |                   |
+| SCTRsfBlkCredTrf  | RsfBulkCreditTransferSepaEbaCt               |                   |
+| SCTScfBlkCredTrf  | ScfBulkCreditTransferSepaEbaCt               |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message   | Source Class                                | Reply Class                                  | AutoReplies Class                                    |
+| --------------- |-----------------|---------------------------------------------|----------------------------------------------|------------------------------------------------------|
+| pacs.008.001.08 | pacs.004.001.09 | FIToFICustomerCreditTransfer08SepaEbaCt     | PaymentReturn09SepaEbaCt                     | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | camt.056.001.08 | FIToFICustomerCreditTransfer08SepaEbaCt     | FIToFIPaymentCancellationRequest08SepaEbaCt  | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | camt.027.001.07 | FIToFICustomerCreditTransfer08SepaEbaCt     | ClaimNonReceipt07SepaEbaCt                   | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | camt.087.001.06 | FIToFICustomerCreditTransfer08SepaEbaCt     | RequestToModifyPayment06SepaEbaCt            | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| pacs.008.001.08 | pacs.028.001.03 | FIToFICustomerCreditTransfer08SepaEbaCt     | FIToFIPaymentStatusRequest03InquirySepaEbaCt | FIToFICustomerCreditTransferSepaEbaCtAutoReplies     |
+| camt.056.001.08 | camt.029.001.09 | FIToFIPaymentCancellationRequest08SepaEbaCt | ResolutionOfInvestigation09SepaEbaCt         | FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies |
+| camt.027.001.07 | camt.029.001.09 | ClaimNonReceipt07SepaEbaCt                  | ResolutionOfInvestigation09SepaEbaCt         | ClaimNonReceiptSepaEbaCtAutoReplies                  |
+| camt.087.001.06 | camt.029.001.09 | RequestToModifyPayment06SepaEbaCt           | ResolutionOfInvestigation09SepaEbaCt         | RequestToModifyPaymentSepaEbaCtAutoReplies           |
+
+Sample code for `FIToFICustomerCreditTransferSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/2b2a43d1ae5b8e25a8b93e2cc218e209).  
+Sample code for `FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/a99f2911e36f15f8454a1cc8ba647ef5).  
+Sample code for `ClaimNonReceiptSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9a45aa976da4343aaf35a42457b63dbb).
+Sample code for `RequestToModifyPaymentSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9ad2a36059d41f994c3cf30b648e24ff).
+
+Please refer to [general auto replies](#auto-replies-2) for more details.
 
 ## More features are included in the paid version
 
