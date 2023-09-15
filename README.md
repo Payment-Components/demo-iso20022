@@ -10,7 +10,7 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/23.1.0/mx-23.1.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/23.1.1/mx-23.1.1-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -28,7 +28,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -44,7 +44,7 @@ repositories {
 ```
 Import the SDK
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -234,13 +234,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -327,7 +327,7 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 ### Supported CBPR+ Message Types (v2.1)
 
 | ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
-| ---------------- | ---------------- | --------------------                    | :---------------: |
+|------------------|------------------|-----------------------------------------|:-----------------:|
 | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |                   |
 | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |                   |
 | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |                   |
@@ -339,10 +339,11 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 | pacs.004.001.09  | PACS_004         | PaymentReturn09                         |                   |
 | pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |                   |
 | pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |                   |
-| pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    | &check;           |
+| pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    |      &check;      |
 | pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |                   |
 | pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |                   |
 | pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |                   |
+| pacs.010.001.03  | PACS_010_COL     | FinancialInstitutionDirectDebit03       |                   |
 | pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |                   |
 | pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |                   |  
 
@@ -459,13 +460,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -838,13 +839,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -908,13 +909,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1020,13 +1021,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1196,13 +1197,13 @@ Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be foun
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1300,13 +1301,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1398,13 +1399,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.0</version>
+    <version>23.1.1</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
