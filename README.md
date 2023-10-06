@@ -9,6 +9,24 @@ For our demonstration we are going to use the demo SDK which can parse/validate/
 
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
 
+## Table of Contents
+1. [SDK Setup](#sdk-setup)
+2. [HOW-TO Use the SDK](#how-to-use-the-sdk)
+3. [CBPR+ Messages](#cbpr-messages)
+4. [SCRIPS (MEPS+) messages](#scrips-meps-messages)
+5. [TARGET2 (RTGS) messages](#target2-rtgs-messages)
+6. [FedNow messages](#fednow-messages)
+7. [SIC/euroSIC messages](#siceurosic-messages)
+8. [BAHTNET messages](#bahtnet-messages)
+9. [CGI-MP messages](#CGI-MP messages)
+10. SEPA Messages
+    - [SEPA-EPC Credit Transfer](#sepa-epc-credit-transfer)
+    - [SEPA-EPC Direct Debit](#sepa-epc-direct-debit)
+    - [SEPA-EPC Instant Payment](#sepa-epc-instant-payment)
+    - [SEPA-EBA Credit Transfer](#sepa-eba-credit-transfer)
+    - [SEPA-DIAS Credit Transfer](#sepa-dias-credit-transfer)
+    - [SEPA-SIBS Credit Transfer](#sepa-sibs-credit-transfer)
+
 ## SDK setup
 Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/23.1.1/mx-23.1.1-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
@@ -73,7 +91,7 @@ compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.8'
 compile group: 'io.github.classgraph', name: 'classgraph', version: '4.8.153'
 ```
 
-## HOW-TO Use our SDK
+## HOW-TO Use the SDK
 
 All ISO20022 messages are identified by a code id and a name. The code id (`FIToFIPmtStsRpt`) and the name (`FIToFIPaymentStatusReportV11`) are located in the .xsd file that describes the XML schema of each message. 
 Both the name and the code id of the message are available in the ISO20022 messages catalogue.
@@ -868,7 +886,6 @@ if (validationErrorList.isEmpty()) {
 }
 ```
 
-
 ### Construct CGI-MP Message
 ```java
 //Initialize the message object
@@ -1188,7 +1205,7 @@ if (validationErrorList.isEmpty()) {
 Sample code for `FIToFICustomerCreditTransferSepaEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/c886fb5ef341241d90b003c88c7cc156).  
 Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/6b9c63d2ddb0ee7b74b4d03408d8ff98).
 
-## SEPA-EΒΑ Credit Transfer
+## SEPA-EBA Credit Transfer
 
 ### SDK Setup
 #### Maven
@@ -1388,7 +1405,6 @@ Sample code for `ClaimNonReceiptSepaDiasCtAutoReplies` can be found [here](https
 Sample code for `RequestToModifyPaymentSepaDiasCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9ad2a36059d41f994c3cf30b648e24ff).
 
 Please refer to [general auto replies](#auto-replies-2) for more details.
-
 
 ## SEPA-SIBS Credit Transfer
 
