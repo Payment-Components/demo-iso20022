@@ -26,9 +26,10 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
     - [SEPA-EBA Credit Transfer](#sepa-eba-credit-transfer)
     - [SEPA-DIAS Credit Transfer](#sepa-dias-credit-transfer)
     - [SEPA-SIBS Credit Transfer](#sepa-sibs-credit-transfer)
+    - [SEPA-SIBS Direct Debit](#sepa-sibs-direct-debit)
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/23.1.1/mx-23.1.1-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/23.4.0/mx-23.4.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -46,7 +47,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -60,9 +61,10 @@ repositories {
     }
 }
 ```
-Import the SDK
+Import the SDK git push https://gantoniadispc14:hGgxJztpi8HNFTZ@github.com/Payment-Components/demo-iso20022.git main
+
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -252,13 +254,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -478,13 +480,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -857,13 +859,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -926,13 +928,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1038,13 +1040,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1214,13 +1216,13 @@ Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be foun
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1318,13 +1320,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1415,13 +1417,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.1.1</version>
+    <version>23.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.1.1:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:23.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1506,6 +1508,99 @@ Sample code for `FIToFICustomerCreditTransferSepaSibsCtAutoReplies` can be found
 Sample code for `FIToFIPaymentCancellationRequestSepaSibsCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/5aa981322b1d3f7d3ed24584c6b58b90).  
 Sample code for `ClaimNonReceiptSepaSibsCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/174b43008a6f8cbfe610ef453626da0f).  
 Sample code for `RequestToModifyPaymentSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/1e1c1fb2b3caad1b775e3f6e96a1aee6).
+
+Please refer to [general auto replies](#auto-replies-2) for more details.
+
+## SEPA-SIBS Direct Debit
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-SIBS-CT demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>23.4.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:23.4.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate SEPA Message
+In case you need to handle SEPA-SIBS-DD messages, there is a dedicated class for each message type.
+```java
+ //Initialize the message object
+FIToFIPaymentStatusReport10S2SepaSibsDd fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10S2SepaSibsDd();
+//Validate against the xml schema
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validateXML(new ByteArrayInputStream(validSepaSibsDdPacs002String.getBytes()));
+
+//Fill the message with data from xml
+fIToFIPaymentStatusReport10.parseXML(validSepaSibsDdPacs002String);
+//Validate both the xml schema and rules
+validationErrorList.addAll(fIToFIPaymentStatusReport10.validate());
+
+if (validationErrorList.isEmpty()) {
+System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+System.out.println(validationErrorList);
+}
+```
+
+### Construct SEPA-SIBS-DD Message
+```java
+//Initialize the message object
+FIToFIPaymentStatusReport10S2SepaSibsDd fIToFIPaymentStatusReport10 = new FIToFIPaymentStatusReport10S2SepaSibsDd();
+//We fill the elements with the message object using setters
+fIToFIPaymentStatusReport10.getMessage().setGrpHdr(new SDDGroupHeader91());
+fIToFIPaymentStatusReport10.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+fIToFIPaymentStatusReport10.setElement("GrpHdr/MsgId", "1234");
+
+//Perform validation
+ValidationErrorList validationErrorList = fIToFIPaymentStatusReport10.validate();
+
+if (validationErrorList.isEmpty()) {
+System.out.println(fIToFIPaymentStatusReport10.convertToXML()); //Get the generated xml
+} else {
+System.out.println(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate SEPA-SIBS-DD message](src/main/java/com/paymentcomponents/swift/mx/sepa/sibs/ct/ParseAndValidateSepaSibsDdMessage.java)
+
+### Supported SEPA-SIBS-DD Message Types
+
+| ISO20022 Message  | Library Object class                         | Available in Demo |
+|-------------------|----------------------------------------------|:-----------------:|
+| camt.056.001.08   | FIToFIPaymentCancellationRequest08SepaSibsDd |                   |
+| pacs.002.001.10   | FIToFIPaymentStatusReport10SepaSibsDd        |                   |
+| pacs.002.001.10S2 | FIToFIPaymentStatusReport10S2SepaSibsDd      |                   |
+| pacs.003.001.08   | FIToFICustomerDirectDebit08SepaSibsDd        |                   |
+| pacs.004.001.09   | PaymentReturn09SepaSibsDd                    |                   |
+| pacs.007.001.09   | FIToFIPaymentReversal09SepaSibsDd            |                   |
+| MPEDDCdfBlkDirDeb | MPEDDCdfBulkDirectDebit                      |                   |
+| MPEDDDnxBlkDirDeb | MPEDDDnxBulkDirectDebit                      |                   |
+| MPEDDDrxBlkDirDeb | MPEDDDrxBulkDirectDebit                      |                   |
+| MPEDDDvfBlkDirDeb | MPEDDDvfBulkDirectDebit                      |                   |
+| MPEDDIdxBlkDirDeb | MPEDDIdxBulkDirectDebit                      |                   |
+| MPEDDIrxBlkDirDeb | MPEDDIrxBulkDirectDebit                      |                   |
+| MPEDDRsfBlkDirDeb | MPEDDRsfBulkDirectDebit                      |                   |
+| MPEDDSdfBlkDirDeb | MPEDDSdfBulkDirectDebit                      |                   |
+
+### Auto replies
+
+| Source Message  | Reply Message     | Source Class                          | Reply Class                             | AutoReplies Class                              |
+|-----------------|-------------------|---------------------------------------|-----------------------------------------|------------------------------------------------|
+| pacs.003.001.08 | pacs.002.001.10S2 | FIToFICustomerDirectDebit08SepaSibsDd | FIToFIPaymentStatusReport10S2SepaSibsDd | FIToFICustomerDirectDebitSepaSibsDdAutoReplies |
+| pacs.003.001.08 | pacs.004.001.09   | FIToFICustomerDirectDebit08SepaSibsDd | PaymentReturn09SepaSibsDd               | FIToFICustomerDirectDebitSepaSibsDdAutoReplies |
+| pacs.003.001.08 | pacs.007.001.09   | FIToFICustomerDirectDebit08SepaSibsDd | FIToFIPaymentReversal09SepaSibsDd       | FIToFICustomerDirectDebitSepaSibsDdAutoReplies |
+
+Sample code for `FIToFICustomerDirectDebitSepaSibsDdAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/f6539013d526670ac4b922f9345655a4).
 
 Please refer to [general auto replies](#auto-replies-2) for more details.
 
