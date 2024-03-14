@@ -346,26 +346,33 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 
 ### Supported CBPR+ Message Types (v2.1)
 
-| ISO20022 Message | CbprMsgType ENUM | Library Object class                    | Available in Demo |
-|------------------|------------------|-----------------------------------------|:-----------------:|
-| camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09             |                   |
-| camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08           |                   |
-| camt.053.001.08  | CAMT_053         | BankToCustomerStatement08               |                   |
-| camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08 |                   |
-| camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08      |                   |
-| camt.057.001.06  | CAMT_057         | NotificationToReceive06                 |                   |
-| camt.060.001.05  | CAMT_060         | AccountReportingRequest05               |                   |
-| pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10             |                   |
-| pacs.004.001.09  | PACS_004         | PaymentReturn09                         |                   |
-| pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08          |                   |
-| pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08          |                   |
-| pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08    |      &check;      |
-| pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08    |                   |
-| pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08    |                   |
-| pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03       |                   |
-| pacs.010.001.03  | PACS_010_COL     | FinancialInstitutionDirectDebit03       |                   |
-| pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09      |                   |
-| pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10           |                   |  
+| ISO20022 Message | CbprMsgType ENUM | Library Object class                      | Available in Demo |
+|------------------|------------------|-------------------------------------------|:-----------------:|
+| camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09               |                   |
+| camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08             |                   |
+| camt.053.001.08  | CAMT_053         | BankToCustomerStatement08                 |                   |
+| camt.054.001.08  | CAMT_054         | BankToCustomerDebitCreditNotification08   |                   |
+| camt.055.001.08  | CAMT_055         | CustomerPaymentCancellationRequest08      |                   |
+| camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08        |                   |
+| camt.057.001.06  | CAMT_057         | NotificationToReceive06                   |                   |
+| camt.058.001.08  | CAMT_058         | NotificationToReceiveCancellationAdvice08 |                   |
+| camt.060.001.05  | CAMT_060         | AccountReportingRequest05                 |                   |
+| camt.107.001.01  | CAMT_107         | ChequePresentmentNotification01           |                   |
+| camt.108.001.01  | CAMT_108         | ChequeCancellationOrStopRequest01         |                   |
+| camt.109.001.01  | CAMT_109         | ChequeCancellationOrStopReport01          |                   |
+| pacs.002.001.10  | PACS_002         | FIToFIPaymentStatusReport10               |                   |
+| pacs.003.001.08  | PACS_003         | FIToFICustomerDirectDebit08               |                   |
+| pacs.004.001.09  | PACS_004         | PaymentReturn09                           |                   |
+| pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08            |                   |
+| pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08            |                   |
+| pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08      |      &check;      |
+| pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08      |                   |
+| pacs.009.001.08  | PACS_009_ADV     | FinancialInstitutionCreditTransfer08      |                   |
+| pacs.010.001.03  | PACS_010         | FinancialInstitutionDirectDebit03         |                   |
+| pacs.010.001.03  | PACS_010_COL     | FinancialInstitutionDirectDebit03         |                   |
+| pain.001.001.09  | PAIN_001         | CustomerCreditTransferInitiation09        |                   |
+| pain.002.001.10  | PAIN_002         | CustomerPaymentStatusReport10             |                   |  
+| pain.008.001.08  | PAIN_008         | CustomerDirectDebitInitiation08           |                   |  
 
 ### Auto replies
 
