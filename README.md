@@ -1720,7 +1720,7 @@ msgReplyInfo1.setRsnInf(rsnInf1);
 msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
         
 UniversalConfirmationsMessage universalConfirmationsMessage =
-   new UniversalConfirmationsMessage<>(new BusinessApplicationHeader02(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
+   new UniversalConfirmationsMessage(new BusinessApplicationHeader02UniversalConfirmations(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
 
 //initiate the Reply Class instance
 UniversalConfirmationsAutoReplies<FIToFICustomerCreditTransfer08> universalConfirmationsAutoReplies =
