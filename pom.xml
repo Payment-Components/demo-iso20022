@@ -8,6 +8,12 @@
     <artifactId>demo-iso20022</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <mx.version>24.0.0</mx.version>
+    </properties>
+
     <repositories>
         <repository>
             <id>paymentcomponents</id>
@@ -51,11 +57,5 @@
             <version>2.5.0</version>
         </dependency>
     </dependencies>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <mx.version>23.35.0</mx.version>
-    </properties>
 
 </project>

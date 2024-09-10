@@ -12,13 +12,15 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
 ## Table of Contents
 1. [SDK Setup](#sdk-setup)
 2. [HOW-TO Use the SDK](#how-to-use-the-sdk)
+3. [Auto Replies](#auto-replies)
+4. [Universal Confirmations](#universal-confirmations)
 3. [CBPR+ Messages](#cbpr-messages)
 4. [SCRIPS (MEPS+) messages](#scrips-meps-messages)
 5. [TARGET2 (RTGS) messages](#target2-rtgs-messages)
 6. [FedNow messages](#fednow-messages)
 7. [SIC/euroSIC messages](#siceurosic-messages)
 8. [BAHTNET messages](#bahtnet-messages)
-9. [CGI-MP messages](#CGI-MP messages)
+9. [CGI-MP messages](#CGI-MP-messages)
 10. SEPA Messages
     - [SEPA-EPC Credit Transfer](#sepa-epc-credit-transfer)
     - [SEPA-EPC Direct Debit](#sepa-epc-direct-debit)
@@ -29,7 +31,7 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
     - [SEPA-SIBS Direct Debit](#sepa-sibs-direct-debit)
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/23.17.0/mx-23.17.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.0.0/mx-24.0.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -47,7 +49,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -64,7 +66,7 @@ repositories {
 Import the SDK git push https://gantoniadispc14:hGgxJztpi8HNFTZ@github.com/Payment-Components/demo-iso20022.git main
 
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -245,6 +247,126 @@ In this project you can see code for all the basic manipulation of an MX message
 - [Build a valid pacs.002](src/main/java/com/paymentcomponents/swift/mx/BuildValidPacs002_12.java)
 - [Convert an MX message to XML](src/main/java/com/paymentcomponents/swift/mx/ConvertMX2XML.java)
 
+## Auto Replies
+
+### Additional Dependencies
+
+In order to use auto-replies, the use of `gson` is required
+**Maven**
+```xml
+<dependency>
+   <groupId>com.google.code.gson</groupId>
+   <artifactId>gson</artifactId>
+   <version>2.8.9</version>
+</dependency>
+```
+
+The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
+The correspondent classes belong to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
+This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
+`MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
+For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
+We initiate this class with the source message.  
+For a `pacs.008.001.10`, the initialization should be:
+```java
+FIToFICustomerCreditTransfer10 pacs008 = new FIToFICustomerCreditTransfer10();
+//fill the message object or parse from an xml
+FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer10, PaymentReturn11> pacs008Replies = 
+    new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
+```
+If we want to create a `pacs.004.001.11` reply for this pacs.008, we should call the `autoReply()` like this:
+```java
+MsgReplyInfo msgReplyInfo = new MsgReplyInfo();
+ReasonInformation reasonInformation = new ReasonInformation();
+msgReplyInfo.setRsnInf(reasonInformation);
+
+reasonInformation.setType(ReasonInformation.Type.CD);
+reasonInformation.setValue("AC01");
+reasonInformation.setAddtlInf(Collections.singletonList("Additional info"));
+
+msgReplyInfo.setOrgnlInstrId("instrId");
+msgReplyInfo.setReplyId("pacs008Reply");
+msgReplyInfo.setIntrBkSttlmDt(new Date());
+
+ChargesInformation chargesInformation = new ChargesInformation();
+chargesInformation.setAmount(new BigDecimal("2.00"));
+chargesInformation.setAgentBic("AAAAGB2L");
+msgReplyInfo.setChargesInformation(Collections.singletonList(chargesInformation));
+
+msgReplyInfo.setChargeBearer("SLEV");
+
+PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
+```
+
+The following replies for generic iso20022 messages are supported:
+
+| Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                             |
+|-----------------|-----------------|--------------------------------------|------------------------------------|-----------------------------------------------|
+| pacs.008.001.xx | pacs.004.001.xx | FIToFICustomerCreditTransferXX       | PaymentReturnXX                    | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.008.001.xx | pacs.002.001.xx | FIToFICustomerCreditTransferXX       | FIToFIPaymentStatusReportXX        | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.008.001.xx | camt.056.001.xx | FIToFICustomerCreditTransferXX       | FIToFIPaymentCancellationRequestXX | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.008.001.xx | camt.027.001.xx | FIToFICustomerCreditTransferXX       | ClaimNonReceiptXX                  | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.008.001.xx | camt.087.001.xx | FIToFICustomerCreditTransferXX       | RequestToModifyPaymentXX           | FIToFICustomerCreditTransferAutoReplies       |
+| pacs.009.001.xx | pacs.004.001.xx | FinancialInstitutionCreditTransferXX | PaymentReturnXX                    | FinancialInstitutionCreditTransferAutoReplies |
+| pacs.009.001.xx | camt.056.001.xx | FinancialInstitutionCreditTransferXX | FIToFIPaymentCancellationRequestXX | FinancialInstitutionCreditTransferAutoReplies |
+| camt.056.001.xx | camt.029.001.xx | FIToFIPaymentCancellationRequestXX   | ResolutionOfInvestigationXX        | FIToFIPaymentCancellationRequestAutoReplies   |
+| camt.056.001.xx | pacs.028.001.xx | FIToFIPaymentCancellationRequestXX   | FIToFIPaymentStatusRequestXX       | FIToFIPaymentCancellationRequestAutoReplies   |
+| camt.027.001.xx | camt.029.001.xx | ClaimNonReceiptXX                    | ResolutionOfInvestigationXX        | ClaimNonReceiptAutoReplies                    |
+| camt.087.001.xx | camt.029.001.xx | RequestToModifyPaymentXX             | ResolutionOfInvestigationXX        | RequestToModifyPaymentAutoReplies             |
+| pacs.003.001.xx | pacs.004.001.xx | FIToFICustomerDirectDebitXX          | PaymentReturnXX                    | FIToFICustomerDirectDebitAutoReplies          |
+| pacs.003.001.xx | pacs.002.001.xx | FIToFICustomerDirectDebitXX          | FIToFIPaymentStatusReportXX        | FIToFICustomerDirectDebitAutoReplies          |
+| pacs.003.001.xx | pacs.007.001.xx | FIToFICustomerDirectDebitXX          | FIToFIPaymentReversalXX            | FIToFICustomerDirectDebitAutoReplies          |
+| pacs.007.001.xx | pacs.004.001.xx | FIToFIPaymentReversalXX              | PaymentReturnXX                    | FIToFIPaymentReversalAutoReplies              |
+
+_* Where XX represents the version of the message._  
+Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/884bf8ac6bcdb715e047e8db83b3cb30).  
+Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/609bc30465ac16783fcfcce890d9f4fc).  
+Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/5cc032704225df3a9d3faa7ca067e70d).
+
+## Universal Confirmations
+
+You can create Universal Confirmations `trck.001.001.02` for a `pacs.008` messages. It is the equivalent of creating MT199 Universal Confirmation for an MT103.  
+First, you need to initiate `FIToFICustomerCreditTransferAutoReplies` class since the method for Universal Confirmation exists there.  
+A Universal Confirmations message is represented by `UniversalConfirmationsMessage` and consists of the ApplicationHeader(`head.001.001.02`) and the Document(`trck.001.001.02`).  
+Available statuses are: `ACCC`, `ACSP` and `RJCT`.  
+Below you can see how to use it.
+```java
+//initiate a UniversalConfirmationsMessage instance
+String status = "ACSP";
+ReasonInformation rsnInf1 = new ReasonInformation();
+rsnInf1.setValue("G001");
+MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
+msgReplyInfo1.setRsnInf(rsnInf1);
+msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
+msgReplyInfo1.setChargeBearer("CRED"); //optional
+msgReplyInfo1.setChargesInformation(new ArrayList<>()); //optional
+msgReplyInfo1.getChargesInformation().add(new ChargesInformation()); //optional
+msgReplyInfo1.getChargesInformation().get(0).setAmount(new BigDecimal("1")); //optional
+
+//OR
+String status = "ACCC";
+MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
+msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
+
+//OR
+String status = "RJCT";
+ReasonInformation rsnInf1 = new ReasonInformation();
+rsnInf1.setValue("AM06");
+MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
+msgReplyInfo1.setRsnInf(rsnInf1);
+msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
+        
+UniversalConfirmationsMessage universalConfirmationsMessage =
+   new UniversalConfirmationsMessage(new BusinessApplicationHeader02UniversalConfirmations(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
+
+//initiate the Reply Class instance
+UniversalConfirmationsAutoReplies<FIToFICustomerCreditTransfer08> universalConfirmationsAutoReplies =
+   new UniversalConfirmationsAutoReplies<>(pacs008);
+
+//call method that generates the universal confirmation
+universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status);
+```
+
 ## CBPR+ messages
 
 ### SDK Setup
@@ -254,13 +376,13 @@ In this project you can see code for all the basic manipulation of an MX message
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -388,7 +510,7 @@ Sample code for `FIToFICustomerCreditTransferCbprAutoReplies` can be found [here
 Sample code for `FinancialInstitutionCreditTransferCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/f6568aeca8fce8b6afb1a69523571e39).  
 Sample code for `FIToFIPaymentCancellationRequestCbprAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/3aad11dd46801eba1d873d9dd1279f87).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
+Please refer to [general auto replies](#auto-replies) for more details.
 
 ## SCRIPS (MEPS+) messages
 
@@ -487,13 +609,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -587,7 +709,7 @@ Sample code for `FIToFICustomerCreditTransferRtgsAutoReplies` can be found [here
 Sample code for `FinancialInstitutionCreditTransferRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/ae0bcf26b114a692a963ce6568706952).  
 Sample code for `FIToFIPaymentCancellationRequestRtgsAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/128efb049020662d394c5e09e341635e).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
+Please refer to [general auto replies](#auto-replies) for more details.
 
 ## FedNow messages
 
@@ -866,13 +988,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -935,13 +1057,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1036,7 +1158,7 @@ Sample code for `FIToFIPaymentCancellationRequestSepaEpcCtAutoReplies` can be fo
 Sample code for `ClaimNonReceiptSepaEpcCtAutoReplies` can be found [here](https://gist.github.com/Gizpc14/330c8b2613a08811fb48d512fb204131).  
 Sample code for `RequestToModifyPaymentSepaEpcCtAutoReplies` can be found [here](https://gist.github.com/Gizpc14/d2afcc314953bfdfd8af4c5e62c8b536).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
+Please refer to [general auto replies](#auto-replies) for more details.
 
 ## SEPA-EPC Direct Debit
 
@@ -1047,13 +1169,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1133,7 +1255,7 @@ found [here](https://gist.github.com/gantoniadispc14/0876e7473e4d578b64fd1ab08f5
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
@@ -1227,13 +1349,13 @@ Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be foun
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1320,7 +1442,7 @@ Sample code for `FIToFIPaymentCancellationRequestSepaEbaCtAutoReplies` can be fo
 Sample code for `ClaimNonReceiptSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9a45aa976da4343aaf35a42457b63dbb).  
 Sample code for `RequestToModifyPaymentSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9ad2a36059d41f994c3cf30b648e24ff).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
+Please refer to [general auto replies](#auto-replies) for more details.
 
 ## SEPA-DIAS Credit Transfer
 
@@ -1331,13 +1453,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1417,7 +1539,7 @@ Sample code for `FIToFIPaymentCancellationRequestSepaDiasCtAutoReplies` can be f
 Sample code for `ClaimNonReceiptSepaDiasCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9a45aa976da4343aaf35a42457b63dbb).
 Sample code for `RequestToModifyPaymentSepaDiasCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/9ad2a36059d41f994c3cf30b648e24ff).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
+Please refer to [general auto replies](#auto-replies) for more details.
 
 ## SEPA-SIBS Credit Transfer
 
@@ -1428,13 +1550,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1520,7 +1642,7 @@ Sample code for `FIToFIPaymentCancellationRequestSepaSibsCtAutoReplies` can be f
 Sample code for `ClaimNonReceiptSepaSibsCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/174b43008a6f8cbfe610ef453626da0f).  
 Sample code for `RequestToModifyPaymentSepaEbaCtAutoReplies` can be found [here](https://gist.github.com/PaymentComponents/1e1c1fb2b3caad1b775e3f6e96a1aee6).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
+Please refer to [general auto replies](#auto-replies) for more details.
 
 ## SEPA-SIBS Direct Debit
 
@@ -1531,13 +1653,13 @@ Please refer to [general auto replies](#auto-replies-2) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>23.17.0</version>
+    <version>24.0.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:23.17.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.0.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1616,119 +1738,7 @@ Sample code for `FIToFICustomerDirectDebitSepaSibsDdAutoReplies` can be found [h
 
 Sample code for `FIToFIPaymentReversalSepaSibsDdAutoReplies` can be found [here](https://gist.github.com/gantoniadispc14/fd3e6f26451d3f4edb54f354355f7cbe).
 
-Please refer to [general auto replies](#auto-replies-2) for more details.
-
-## More features are included in the paid version
-
-### Auto Replies
-
-#### Additional Dependencies
-
-In order to use auto-replies, the use of `gson` is required
-**Maven**
-```xml
-<dependency>
-   <groupId>com.google.code.gson</groupId>
-   <artifactId>gson</artifactId>
-   <version>2.8.9</version>
-</dependency>
-```
-  
-The library supports the creation of reply message. For example, for a `pacs.008` message, you can create a `pacs.004` message.  
-The correspondent classes belong to `gr.datamation.replies` package and extends the `CoreMessageAutoReplies` abstract Class.  
-This class contains the `abstract <R extends CoreMessage> R autoReply(R replyMessage, List<MsgReplyInfo> msgReplyInfo)` method.  
-`MsgReplyInfo` contains information for the reply and is a list because some reply messages may contain many transactions.  
-For example, for a `pacs.008.001.10`, the class for replies should be `FIToFICustomerCreditTransferAutoReplies` that extends `CoreMessageAutoReplies`.  
-We initiate this class with the source message.  
-For a `pacs.008.001.10`, the initialization should be:
-```java
-FIToFICustomerCreditTransfer10 pacs008 = new FIToFICustomerCreditTransfer10();
-//fill the message object or parse from an xml
-FIToFICustomerCreditTransferAutoReplies<FIToFICustomerCreditTransfer10, PaymentReturn11> pacs008Replies = 
-    new FIToFICustomerCreditTransferAutoReplies<>(pacs008);
-```
-If we want to create a `pacs.004.001.11` reply for this pacs.008, we should call the `autoReply()` like this:
-```java
-MsgReplyInfo msgReplyInfo = new MsgReplyInfo();
-ReasonInformation reasonInformation = new ReasonInformation();
-msgReplyInfo.setRsnInf(reasonInformation);
-
-reasonInformation.setType(ReasonInformation.Type.CD);
-reasonInformation.setValue("AC01");
-reasonInformation.setAddtlInf(Collections.singletonList("Additional info"));
-
-msgReplyInfo.setOrgnlInstrId("instrId");
-msgReplyInfo.setReplyId("pacs008Reply");
-msgReplyInfo.setIntrBkSttlmDt(new Date());
-
-ChargesInformation chargesInformation = new ChargesInformation();
-chargesInformation.setAmount(new BigDecimal("2.00"));
-chargesInformation.setAgentBic("AAAAGB2L");
-msgReplyInfo.setChargesInformation(Collections.singletonList(chargesInformation));
-
-msgReplyInfo.setChargeBearer("SLEV");
-
-PaymentReturn11 pacs004 = pacs008Replies.autoReply(new PaymentReturn11(), Collections.singletonList(msgReplyInfo));
-```
-
-The following replies for generic iso20022 messages are supported:
-
-| Source Message  | Reply Message   | Source Class                         | Reply Class                        | AutoReplies Class                             |
-| --------------- | --------------- | ------------------------------------ | ---------------------------------- | --------------------------------------------- |
-| pacs.008.001.xx | pacs.004.001.xx | FIToFICustomerCreditTransferXX       | PaymentReturnXX                    | FIToFICustomerCreditTransferAutoReplies       |
-| pacs.008.001.xx | camt.056.001.xx | FIToFICustomerCreditTransferXX       | FIToFIPaymentCancellationRequestXX | FIToFICustomerCreditTransferAutoReplies       |
-| pacs.009.001.xx | pacs.004.001.xx | FinancialInstitutionCreditTransferXX | PaymentReturnXX                    | FinancialInstitutionCreditTransferAutoReplies |
-| pacs.009.001.xx | camt.056.001.xx | FinancialInstitutionCreditTransferXX | FIToFIPaymentCancellationRequestXX | FinancialInstitutionCreditTransferAutoReplies |
-| camt.056.001.xx | camt.029.001.xx | FIToFIPaymentCancellationRequestXX   | ResolutionOfInvestigationXX        | FIToFIPaymentCancellationRequestAutoReplies   |
-
-_* Where XX represents the version of the message._  
-Sample code for `FIToFICustomerCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/884bf8ac6bcdb715e047e8db83b3cb30).  
-Sample code for `FinancialInstitutionCreditTransferAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/609bc30465ac16783fcfcce890d9f4fc).  
-Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here](https://gist.github.com/johnmara-pc14/5cc032704225df3a9d3faa7ca067e70d).
-
-### Universal Confirmations
-
-You can create Universal Confirmations `trck.001.001.02` for a `pacs.008` messages. It is the equivalent of creating MT199 Universal Confirmation for an MT103.  
-First, you need to initiate `FIToFICustomerCreditTransferAutoReplies` class since the method for Universal Confirmation exists there.  
-A Universal Confirmations message is represented by `UniversalConfirmationsMessage` and consists of the ApplicationHeader(`head.001.001.02`) and the Document(`trck.001.001.02`).  
-Available statuses are: `ACCC`, `ACSP` and `RJCT`.  
-Below you can see how to use it.
-```java
-//initiate a UniversalConfirmationsMessage instance
-String status = "ACSP";
-ReasonInformation rsnInf1 = new ReasonInformation();
-rsnInf1.setValue("G001");
-MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
-msgReplyInfo1.setRsnInf(rsnInf1);
-msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
-msgReplyInfo1.setChargeBearer("CRED"); //optional
-msgReplyInfo1.setChargesInformation(new ArrayList<>()); //optional
-msgReplyInfo1.getChargesInformation().add(new ChargesInformation()); //optional
-msgReplyInfo1.getChargesInformation().get(0).setAmount(new BigDecimal("1")); //optional
-
-//OR
-String status = "ACCC";
-MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
-msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
-
-//OR
-String status = "RJCT";
-ReasonInformation rsnInf1 = new ReasonInformation();
-rsnInf1.setValue("AM06");
-MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
-msgReplyInfo1.setRsnInf(rsnInf1);
-msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
-        
-UniversalConfirmationsMessage universalConfirmationsMessage =
-   new UniversalConfirmationsMessage(new BusinessApplicationHeader02UniversalConfirmations(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
-
-//initiate the Reply Class instance
-UniversalConfirmationsAutoReplies<FIToFICustomerCreditTransfer08> universalConfirmationsAutoReplies =
-   new UniversalConfirmationsAutoReplies<>(pacs008);
-
-//call method that generates the universal confirmation
-universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status);
-```
+Please refer to [general auto replies](#auto-replies) for more details.
 
 
 ### See more provided SDKs on ISO20022 and SWIFT MT [here](https://github.com/Payment-Components)
