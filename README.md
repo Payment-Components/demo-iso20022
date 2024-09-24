@@ -31,7 +31,7 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
     - [SEPA-SIBS Direct Debit](#sepa-sibs-direct-debit)
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.3.0/mx-24.3.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.4.0/mx-24.4.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -49,7 +49,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -66,7 +66,7 @@ repositories {
 Import the SDK git push https://gantoniadispc14:hGgxJztpi8HNFTZ@github.com/Payment-Components/demo-iso20022.git main
 
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -325,14 +325,16 @@ Sample code for `FIToFIPaymentCancellationRequestAutoReplies` can be found [here
 
 ## Universal Confirmations
 
-You can create Universal Confirmations `trck.001.001.02` for a `pacs.008` messages. It is the equivalent of creating MT199 Universal Confirmation for an MT103.  
+You can create Universal Confirmations `trck.001.001.03` for a `pacs.008` messages. It is the equivalent of creating MT199 Universal Confirmation for an MT103.  
 First, you need to initiate `FIToFICustomerCreditTransferAutoReplies` class since the method for Universal Confirmation exists there.  
-A Universal Confirmations message is represented by `UniversalConfirmationsMessage` and consists of the ApplicationHeader(`head.001.001.02`) and the Document(`trck.001.001.02`).  
+A Universal Confirmations message is represented by `UniversalConfirmationsMessage` and consists of the ApplicationHeader(`head.001.001.02`) and the Document(`trck.001.001.03`).  
 Available statuses are: `ACCC`, `ACSP` and `RJCT`.  
+Available paymentScenario are: `CCTR` and `RCCT`.  
 Below you can see how to use it.
 ```java
 //initiate a UniversalConfirmationsMessage instance
 String status = "ACSP";
+String paymentScenario = "CCTR";
 ReasonInformation rsnInf1 = new ReasonInformation();
 rsnInf1.setValue("G001");
 MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
@@ -345,11 +347,13 @@ msgReplyInfo1.getChargesInformation().get(0).setAmount(new BigDecimal("1")); //o
 
 //OR
 String status = "ACCC";
+String paymentScenario = "CCTR";
 MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
 msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
 
 //OR
 String status = "RJCT";
+String paymentScenario = "CCTR";
 ReasonInformation rsnInf1 = new ReasonInformation();
 rsnInf1.setValue("AM06");
 MsgReplyInfo msgReplyInfo1 = new MsgReplyInfo();
@@ -357,14 +361,14 @@ msgReplyInfo1.setRsnInf(rsnInf1);
 msgReplyInfo1.setOrgnlInstrId("BBBB/150928-CCT/JPY/123/0");
         
 UniversalConfirmationsMessage universalConfirmationsMessage =
-   new UniversalConfirmationsMessage(new BusinessApplicationHeader02UniversalConfirmations(), new PaymentStatusTrackerUpdate02UniversalConfirmations());
+   new UniversalConfirmationsMessage(new BusinessApplicationHeader03UniversalConfirmations(), new PaymentStatusTrackerUpdate03UniversalConfirmations());
 
 //initiate the Reply Class instance
 UniversalConfirmationsAutoReplies<FIToFICustomerCreditTransfer08> universalConfirmationsAutoReplies =
    new UniversalConfirmationsAutoReplies<>(pacs008);
 
 //call method that generates the universal confirmation
-universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status);
+universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Arrays.asList(msgReplyInfo1), status, paymentScenario);
 ```
 
 ## CBPR+ messages
@@ -376,13 +380,13 @@ universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Array
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -610,13 +614,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -989,13 +993,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1058,13 +1062,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1170,13 +1174,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1256,7 +1260,7 @@ found [here](https://gist.github.com/gantoniadispc14/0876e7473e4d578b64fd1ab08f5
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
@@ -1350,13 +1354,13 @@ Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be foun
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1454,13 +1458,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1551,13 +1555,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1654,13 +1658,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.3.0</version>
+    <version>24.4.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.3.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
