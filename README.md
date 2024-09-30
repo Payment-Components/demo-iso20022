@@ -16,12 +16,13 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
 4. [Universal Confirmations](#universal-confirmations)
 3. [CBPR+ Messages](#cbpr-messages)
 4. [SCRIPS (MEPS+) messages](#scrips-meps-messages)
-5. [TARGET2 (RTGS) messages](#target2-rtgs-messages)
-6. [FedNow messages](#fednow-messages)
-7. [SIC/euroSIC messages](#siceurosic-messages)
-8. [BAHTNET messages](#bahtnet-messages)
-9. [CGI-MP messages](#CGI-MP-messages)
-10. SEPA Messages
+5. [MEPS+ Like4Like messages](#meps-like4like-messages)
+6. [TARGET2 (RTGS) messages](#target2-rtgs-messages)
+7. [FedNow messages](#fednow-messages)
+8. [SIC/euroSIC messages](#siceurosic-messages)
+9. [BAHTNET messages](#bahtnet-messages)
+10. [CGI-MP messages](#CGI-MP-messages)
+11. SEPA Messages
     - [SEPA-EPC Credit Transfer](#sepa-epc-credit-transfer)
     - [SEPA-EPC Direct Debit](#sepa-epc-direct-debit)
     - [SEPA-EPC Instant Payment](#sepa-epc-instant-payment)
@@ -31,7 +32,7 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
     - [SEPA-SIBS Direct Debit](#sepa-sibs-direct-debit)
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.4.0/mx-24.4.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.6.0/mx-24.6.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -49,7 +50,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -66,7 +67,7 @@ repositories {
 Import the SDK git push https://gantoniadispc14:hGgxJztpi8HNFTZ@github.com/Payment-Components/demo-iso20022.git main
 
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -380,13 +381,13 @@ universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Array
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -605,6 +606,97 @@ if (validationErrorList.isEmpty()) {
 | camt.053.001.08  | CAMT_053           | BankToCustomerStatement08            |
 | camt.053.001.08  | CAMT_053_AOS       | BankToCustomerStatement08            |
 
+
+## MEPS+ Like4Like messages
+
+### Parse & Validate MEPS+ Like4Like Message
+In case you need to handle MEPS+ Like4Like messages, then you need to handle objects of MepsMessage class.
+
+```java
+//Initialize the mepsMessage
+MepsMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> mepsMessage = new MepsMessage<>(new BusinessApplicationHeader02(), new FinancialInstitutionCreditTransfer08());
+//Fill the mepsMessage with data from xml and validate MEPS against the xml schema
+ValidationErrorList validationErrorList = mepsMessage.autoParseAndValidateXml(new ByteArrayInputStream(validMepsPacs009CoreString.getBytes()));
+//Perform validation in both header and message object using mepsMessage
+//Use MepsMessage.MepsMsgType enumeration object to select the matching schema (check the table of supported MEPS messages below
+//MepsMessage.extractMepsMsgType() can also be used
+validationErrorList.addAll(mepsMessage.validate(MepsMessage.MepsMsgType.PACS_009_CORE));
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(fiToFICustomerCreditTransfer.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+ 
+//Extract the header and the core message from mepsMessage object
+BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)mepsMessage.getAppHdr();
+FIToFICustomerCreditTransfer08 fiToFICustomerCreditTransfer = (FIToFICustomerCreditTransfer08) mepsMessage.getDocument();
+```
+
+### AutoParse MEPS+ Like4Like Message
+```java
+//Initialize the mepsMessage
+MepsMessage<?, ?> mepsMessage = new MepsMessage<>();
+//Fill the mepsMessage with data from xml and validate MEPS+ Lik4Like against the xml schema
+ValidationErrorList validationErrorList = mepsMessage.autoParseAndValidateXml(new ByteArrayInputStream(validMepsPacs009CoreString.getBytes()));
+
+//Perform validation in both header and message object using mepsMessage
+validationErrorList.addAll(mepsMessage.autoValidate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println("Message is valid");
+    System.out.println(mepsMessage.convertToXML()); //Get the generated xmls for head and document
+} else {
+    handleValidationError(validationErrorList);
+}
+```
+
+### Construct MEPS+ Like4Like Message
+```java
+//Initialize the document object
+FinancialInstitutionCreditTransfer08 financialInstitutionCreditTransfer08 = new FinancialInstitutionCreditTransfer08();
+financialInstitutionCreditTransfer08.parseXML(validMepsPacs009CoreDocumentString);
+
+//We fill the elements of the message object using setters
+//financialInstitutionCreditTransfer08.getMessage().setGrpHdr(new GroupHeader93())
+//financialInstitutionCreditTransfer08.getMessage().getGrpHdr().setMsgId("1234")
+
+//or setElement()
+//financialInstitutionCreditTransfer08.setElement("GrpHdr/MsgId", "1234")
+
+//Construct the MEPS message object using two separate objects, header, document
+MepsMessage<BusinessApplicationHeader02, FinancialInstitutionCreditTransfer08> mepsMessage = new MepsMessage<>(businessApplicationHeader, financialInstitutionCreditTransfer08);
+
+//Perform validation in both header and message object using mepsMessage
+//Use MepsMessage.MepsMsgType enumeration object to select the matching schema (check the table of supported MEPS messages below
+//MepsMessage.extractMepsMsgType() can also be used
+ValidationErrorList validationErrorList = mepsMessage.validate(MepsMessage.MepsMsgType.PACS_009_CORE);
+
+if (validationErrorList.isEmpty()) {
+    System.out.println("Message is valid");
+    System.out.println(mepsMessage.convertToXML()); //Get the generated xmls for head and document
+} else {
+    handleValidationError(validationErrorList);
+}
+```
+
+### Code samples
+[Parse and validate MEPS+ Like4Like message](https://gist.github.com/johnmara-pc14/1ac712b7ff6371b9256734160ef90d86)
+
+### Supported MEPS+ Like4Like Message Types (v1.2)
+
+| ISO20022 Message | MepsMsgType ENUM | Library Object class                 |
+|------------------|------------------|--------------------------------------|
+| camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09          |
+| camt.056.001.08  | CAMT_056         | FIToFIPaymentCancellationRequest08   |
+| pacs.008.001.08  | PACS_008         | FIToFICustomerCreditTransfer08       |
+| pacs.008.001.08  | PACS_008_STP     | FIToFICustomerCreditTransfer08       |
+| pacs.009.001.08  | PACS_009_CORE    | FinancialInstitutionCreditTransfer08 |
+| pacs.009.001.08  | PACS_009_COV     | FinancialInstitutionCreditTransfer08 |
+| camt.053.001.08  | CAMT_053         | BankToCustomerStatement08            |
+| camt.053.001.08  | CAMT_053_AOS     | BankToCustomerStatement08            |
+
+
 ## TARGET2 (RTGS) messages
 
 ### SDK Setup
@@ -614,13 +706,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -993,13 +1085,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1062,13 +1154,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1174,13 +1266,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1260,7 +1352,7 @@ found [here](https://gist.github.com/gantoniadispc14/0876e7473e4d578b64fd1ab08f5
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
@@ -1354,13 +1446,13 @@ Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be foun
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1458,13 +1550,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1555,13 +1647,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1658,13 +1750,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.4.0</version>
+    <version>24.6.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.4.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.6.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
