@@ -1135,6 +1135,34 @@ if (validationErrorList.isEmpty()) {
     System.out.println(validationErrorList);
 }
 
+### Code samples
+[Parse and validate CGI-MP message](https://gist.github.com/PaymentComponents/bcb63721ba2a598a2312c88d2939dc8c)
+
+### Supported CGI-MP Message Types
+
+| ISO20022 Message                | Library Object class                                  |
+|---------------------------------|-------------------------------------------------------|
+| pain.001.001.09.relay.service   | CustomerCreditTransferInitiation09RelayServiceCgiMp   |
+| pain.001.001.09.urgent.payments | CustomerCreditTransferInitiation09UrgentPaymentsCgiMp |
+
+## SEPA-EPC Credit Transfer
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the SEPA-EPC-CT demo SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>24.14.0</version>
+    <classifier>demo-sepa</classifier>
+</dependency>
+```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
 
 ## Swiftcase messages
 
@@ -1249,36 +1277,6 @@ swiftcaseMessage.encloseSwiftcaseMessage("RequestPayload") //In case you want Re
 | camt.110.001.01 RQUF      | CAMT_110_RQUF         | investigationRequest01  |                   |
 | camt.110.001.01 RQVA      | CAMT_110_RQVA         | investigationRequest01  |                   |
 | camt.110.001.01 UTAP      | CAMT_110_UTAP         | investigationRequest01  |                   |
-
-
-### Code samples
-[Parse and validate CGI-MP message](https://gist.github.com/PaymentComponents/bcb63721ba2a598a2312c88d2939dc8c)
-
-### Supported CGI-MP Message Types
-
-| ISO20022 Message                | Library Object class                                  |
-|---------------------------------|-------------------------------------------------------|
-| pain.001.001.09.relay.service   | CustomerCreditTransferInitiation09RelayServiceCgiMp   |
-| pain.001.001.09.urgent.payments | CustomerCreditTransferInitiation09UrgentPaymentsCgiMp |
-
-## SEPA-EPC Credit Transfer
-
-### SDK Setup
-#### Maven
-```xml
-<!-- Import the SEPA-EPC-CT demo SDK-->
-<dependency>
-    <groupId>gr.datamation.mx</groupId>
-    <artifactId>mx</artifactId>
-    <version>24.14.0</version>
-    <classifier>demo-sepa</classifier>
-</dependency>
-```
-#### Gradle
-```groovy
-implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
-```
-Please refer to [General SDK Setup](#SDK-setup) for more details.
 
 ### Parse & Validate SEPA Message
 In case you need to handle SEPA-EPC-CT messages, then you need to handle objects that extend the ISO20022 classes.
