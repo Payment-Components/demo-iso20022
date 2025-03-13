@@ -22,7 +22,8 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
 8. [SIC/euroSIC messages](#siceurosic-messages)
 9. [BAHTNET messages](#bahtnet-messages)
 10. [CGI-MP messages](#CGI-MP-messages)
-11. SEPA Messages
+11. [Swiftcase messages](#swiftcase-messages)
+12. SEPA Messages
     - [SEPA-EPC Credit Transfer](#sepa-epc-credit-transfer)
     - [SEPA-EPC Direct Debit](#sepa-epc-direct-debit)
     - [SEPA-EPC Instant Payment](#sepa-epc-instant-payment)
@@ -32,7 +33,7 @@ It's a simple maven project, you can download it and run it, with Java 1.8 or ab
     - [SEPA-SIBS Direct Debit](#sepa-sibs-direct-debit)
 
 ## SDK setup
-Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.10.0/mx-24.10.0-demo.jar) into your project by the regular IDE means. 
+Incorporate the SDK [jar](https://nexus.paymentcomponents.com/repository/public/gr/datamation/mx/mx/24.14.0/mx-24.14.0-demo.jar) into your project by the regular IDE means. 
 This process will vary depending upon your specific IDE and you should consult your documentation on how to deploy a bean. 
 For example in Eclipse all that needs to be done is to import the jar files into a project.
 Alternatively, you can import it as a Maven or Gradle dependency.  
@@ -50,7 +51,7 @@ Import the SDK
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo</classifier>
 </dependency>
 ```
@@ -67,7 +68,7 @@ repositories {
 Import the SDK git push https://gantoniadispc14:hGgxJztpi8HNFTZ@github.com/Payment-Components/demo-iso20022.git main
 
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo@jar'
 ```
 In case you purchase the SDK you will be given a protected Maven repository with a user name and a password. You can configure your project to download the SDK from there.
 
@@ -381,13 +382,13 @@ universalConfirmationsAutoReplies.autoReply(universalConfirmationsMessage, Array
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-cbpr</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-cbpr@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-cbpr@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -706,13 +707,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-rtgs</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-rtgs@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-rtgs@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1085,13 +1086,13 @@ bahtnetMessage.encloseBahtnetMessage("RequestPayload") //In case you want Reques
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>{CLIENT_CLASSIFIER}</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:{CLIENT_CLASSIFIER}@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:{CLIENT_CLASSIFIER}@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1133,7 +1134,122 @@ if (validationErrorList.isEmpty()) {
 } else {
     System.out.println(validationErrorList);
 }
+
+
+## Swiftcase messages
+
+### SDK Setup
+#### Maven
+```xml
+<!-- Import the Swiftcase SDK-->
+<dependency>
+    <groupId>gr.datamation.mx</groupId>
+    <artifactId>mx</artifactId>
+    <version>24.14.0</version>
+    <classifier>swiftcase</classifier>
+</dependency>
 ```
+#### Gradle
+```groovy
+implementation 'gr.datamation.mx:mx:24.14.0:swiftcase@jar'
+```
+Please refer to [General SDK Setup](#SDK-setup) for more details.
+
+### Parse & Validate Swiftcase Message
+In case you need to handle Swiftcase messages, then you need to handle objects of SwiftcaseMessage class.
+
+```java
+//Initialize the swiftcaseMessage
+SwiftcaseMessage<BusinessApplicationHeader02, InvestigationRequest01> swiftcaseMessage = new SwiftcaseMessage<>(new BusinessApplicationHeader02(), new InvestigationRequest01());
+//Fill the swiftcaseMessage with data from xml validate Swiftcase against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = swiftcaseMessage.autoParseAndValidateXml(new ByteArrayInputStream(validSwiftcaseCamt110String.getBytes()));
+//Perform validation in both header and message object using swiftcaseMessage
+//Use SwiftcaseMessage.SwiftcaseMsgType enumeration object to select the matching schema (check the table of supported Swiftcase messages below
+//SwiftcaseMessage.extractSwiftcaseMsgType() can also be used
+validationErrorList.addAll(swiftcaseMessage.validate(SwiftcaseMessage.SwiftcaseMsgType.CAMT_110_OTHR));
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(investigationRequest01.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+ 
+//Extract the header and the core message from swiftcaseMessage object
+BusinessApplicationHeader02 businessApplicationHeader = (BusinessApplicationHeader02)swiftcaseMessage.getAppHdr();
+InvestigationRequest01 investigationRequest01 = (InvestigationRequest01) swiftcaseMessage.getDocument();
+```
+
+### AutoParse & Validate Swiftcase Message
+```java
+//Initialize the swiftcaseMessage
+SwiftcaseMessage<?, ?> swiftcaseMessage = new SwiftcaseMessage<>();
+//Fill the swiftcaseMessage with data from xml and validate Swiftcase against the xml schema. We can also exit in case of errors in this step.
+ValidationErrorList validationErrorList = swiftcaseMessage.autoParseAndValidateXml(new ByteArrayInputStream(validSwiftcaseCamt110String.getBytes()));
+
+//Perform validation in both header and message object using swiftcaseMessage
+validationErrorList.addAll(swiftcaseMessage.autoValidate());
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(investigationRequest01.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+### Construct Swiftcase Message
+```java
+//Initialize the header object
+BusinessApplicationHeader02 businessApplicationHeader = new BusinessApplicationHeader02();
+businessApplicationHeader.parseXML(validSwiftcaseCamt110HeaderString);
+
+//Initialize the document object
+InvestigationRequest01 investigationRequest01 = new InvestigationRequest01();
+investigationRequest01.parseXML(validSwiftcaseCamt110DocumentString);
+
+//We fill the elements of the message object using setters
+investigationRequest01.getMessage().setGrpHdr(new GroupHeader93());
+investigationRequest01.getMessage().getGrpHdr().setMsgId("1234");
+//or setElement()
+investigationRequest01.setElement("GrpHdr/MsgId", "1234");
+
+//Construct the Swiftcase message object      
+SwiftcaseMessage<BusinessApplicationHeader02, InvestigationRequest01> swiftcaseMessage = new SwiftcaseMessage<>(businessApplicationHeader, investigationRequest01);
+
+//Perform validation in both header and message object using swiftcaseMessage
+//Use SwiftcaseMessage.SwiftcaseMsgType enumeration object to select the matching schema (check the table of supported Swiftcase messages below)
+//SwiftcaseMessage.extractSwiftcaseMsgType() can also be used
+ValidationErrorList validationErrorList = swiftcaseMessage.validate(SwiftcaseMessage.SwiftcaseMsgType.CAMT_110_OTHR); 
+
+if (validationErrorList.isEmpty()) {
+    System.out.println(investigationRequest01.convertToXML()); //Get the generated xml
+} else {
+    System.out.println(validationErrorList);
+}
+```
+
+In case you want to enclose the Swiftcase message under another Root Element, use the code below
+```java
+swiftcaseMessage.encloseSwiftcaseMessage("RequestPayload") //In case you want RequestPayload
+```
+
+### Code samples
+[Parse and validate Swiftcase message](src/main/java/com/paymentcomponents/swift/mx/swiftcase/ParseAndValidateSwiftcaseMessage.java)
+
+### Supported Swiftcase Message Types
+
+| ISO20022 Message          | SwiftcaseMsgType ENUM | Library Object class    | Available in Demo |
+|---------------------------|-----------------------|-------------------------|:-----------------:|
+| camt.110.001.01 CCNR_CONR | CAMT_110_CCNR_CONR    | investigationRequest01  |                   |
+| camt.110.001.01 OTHR      | CAMT_110_OTHR         | investigationRequest01  |                   |
+| camt.110.001.01 RQCH      | CAMT_110_RQCH         | investigationRequest01  |                   |
+| camt.110.001.01 RQDA      | CAMT_110_RQDA         | investigationRequest01  |                   |
+| camt.110.001.01 RQFI_COMP | CAMT_110_RQFI_COMP    | investigationRequest01  |                   |
+| camt.110.001.01 RQFI_SANC | CAMT_110_RQFI_SANC    | investigationRequest01  |                   |
+| camt.110.001.01 RQFI_UTEX | CAMT_110_RQFI_UTEX    | investigationRequest01  |                   |
+| camt.110.001.01 RQUF      | CAMT_110_RQUF         | investigationRequest01  |                   |
+| camt.110.001.01 RQVA      | CAMT_110_RQVA         | investigationRequest01  |                   |
+| camt.110.001.01 UTAP      | CAMT_110_UTAP         | investigationRequest01  |                   |
+
 
 ### Code samples
 [Parse and validate CGI-MP message](https://gist.github.com/PaymentComponents/bcb63721ba2a598a2312c88d2939dc8c)
@@ -1154,13 +1270,13 @@ if (validationErrorList.isEmpty()) {
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1266,13 +1382,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1352,7 +1468,7 @@ found [here](https://gist.github.com/gantoniadispc14/0876e7473e4d578b64fd1ab08f5
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
@@ -1446,13 +1562,13 @@ Sample code for `FIToFIPaymentCancellationRequestEpcInstAutoReplies` can be foun
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1550,13 +1666,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1647,13 +1763,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
@@ -1750,13 +1866,13 @@ Please refer to [general auto replies](#auto-replies) for more details.
 <dependency>
     <groupId>gr.datamation.mx</groupId>
     <artifactId>mx</artifactId>
-    <version>24.10.0</version>
+    <version>24.14.0</version>
     <classifier>demo-sepa</classifier>
 </dependency>
 ```
 #### Gradle
 ```groovy
-implementation 'gr.datamation.mx:mx:24.10.0:demo-sepa@jar'
+implementation 'gr.datamation.mx:mx:24.14.0:demo-sepa@jar'
 ```
 Please refer to [General SDK Setup](#SDK-setup) for more details.
 
