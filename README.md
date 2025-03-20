@@ -476,6 +476,7 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 
 | ISO20022 Message | CbprMsgType ENUM | Library Object class                      | Available in Demo |
 |------------------|------------------|-------------------------------------------|:-----------------:|
+| admi.024.001.01  | ADMI_024         | NotificationOfCorrespondence01            |                   |
 | camt.029.001.09  | CAMT_029         | ResolutionOfInvestigation09               |                   |
 | camt.052.001.08  | CAMT_052         | BankToCustomerAccountReport08             |                   |
 | camt.053.001.08  | CAMT_053         | BankToCustomerStatement08                 |                   |
@@ -485,6 +486,10 @@ cbprMessage.encloseCbprMessage("RequestPayload") //In case you want RequestPaylo
 | camt.057.001.06  | CAMT_057         | NotificationToReceive06                   |                   |
 | camt.058.001.08  | CAMT_058         | NotificationToReceiveCancellationAdvice08 |                   |
 | camt.060.001.05  | CAMT_060         | AccountReportingRequest05                 |                   |
+| camt.105.001.02  | CAMT_105         | ChargesPaymentNotification02              |                   |
+| camt.105.001.02  | CAMT_105_MLP     | ChargesPaymentNotification02              |                   |
+| camt.106.001.02  | CAMT_106         | ChargesPaymentRequest02                   |                   |
+| camt.106.001.02  | CAMT_106_MLP     | ChargesPaymentRequest02                   |                   |
 | camt.107.001.01  | CAMT_107         | ChequePresentmentNotification01           |                   |
 | camt.108.001.01  | CAMT_108         | ChequeCancellationOrStopRequest01         |                   |
 | camt.109.001.01  | CAMT_109         | ChequeCancellationOrStopReport01          |                   |
