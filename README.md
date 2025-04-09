@@ -1273,15 +1273,25 @@ swiftcaseMessage.encloseSwiftcaseMessage("RequestPayload") //In case you want Re
 | ISO20022 Message          | SwiftcaseMsgType ENUM | Library Object class    | Available in Demo |
 |---------------------------|-----------------------|-------------------------|:-----------------:|
 | camt.110.001.01 CCNR_CONR | CAMT_110_CCNR_CONR    | investigationRequest01  |                   |
+| camt.111.001.02 CCNR_CONR | CAMT_111_CCNR_CONR    | InvestigationResponse02 |                   |
 | camt.110.001.01 OTHR      | CAMT_110_OTHR         | investigationRequest01  |                   |
+| camt.111.001.02 OTHR      | CAMT_111_OTHR         | InvestigationResponse02 |                   |
 | camt.110.001.01 RQCH      | CAMT_110_RQCH         | investigationRequest01  |                   |
+| camt.111.001.02 RQCH      | CAMT_111_RQCH         | InvestigationResponse02 |                   |
 | camt.110.001.01 RQDA      | CAMT_110_RQDA         | investigationRequest01  |                   |
+| camt.111.001.02 RQDA      | CAMT_111_RQDA         | InvestigationResponse02 |                   |
 | camt.110.001.01 RQFI_COMP | CAMT_110_RQFI_COMP    | investigationRequest01  |                   |
+| camt.111.001.02 RQFI_COMP | CAMT_111_RQFI_COMP    | InvestigationResponse02 |                   |
 | camt.110.001.01 RQFI_SANC | CAMT_110_RQFI_SANC    | investigationRequest01  |                   |
+| camt.111.001.02 RQFI_SANC | CAMT_111_RQFI_SANC    | InvestigationResponse02 |                   |
 | camt.110.001.01 RQFI_UTEX | CAMT_110_RQFI_UTEX    | investigationRequest01  |                   |
+| camt.111.001.02 RQFI_UTEX | CAMT_111_RQFI_UTEX    | InvestigationResponse02 |                   |
 | camt.110.001.01 RQUF      | CAMT_110_RQUF         | investigationRequest01  |                   |
+| camt.111.001.02 RQUF      | CAMT_111_RQUF         | InvestigationResponse02 |                   |
 | camt.110.001.01 RQVA      | CAMT_110_RQVA         | investigationRequest01  |                   |
+| camt.111.001.02 RQVA      | CAMT_111_RQVA         | InvestigationResponse02 |                   |
 | camt.110.001.01 UTAP      | CAMT_110_UTAP         | investigationRequest01  |                   |
+| camt.111.001.02 UTAP      | CAMT_111_UTAP         | InvestigationResponse02 |                   |
 
 ### Parse & Validate SEPA Message
 In case you need to handle SEPA-EPC-CT messages, then you need to handle objects that extend the ISO20022 classes.
