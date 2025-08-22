@@ -82,7 +82,7 @@ You can use maven or gradle to add the dependencies below or manually include th
 <dependency>
     <groupId>org.codehaus.groovy</groupId>
     <artifactId>groovy-all</artifactId>
-    <version>2.4.8</version>
+    <version>2.5.11</version>
 </dependency>
 <dependency>
    <groupId>io.github.classgraph</groupId>
