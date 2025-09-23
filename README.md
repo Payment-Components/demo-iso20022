@@ -1969,4 +1969,15 @@ Sample code for `FIToFIPaymentReversalSepaSibsDdAutoReplies` can be found [here]
 Please refer to [general auto replies](#auto-replies) for more details.
 
 
+### NVD Data Usage
+
+This software uses data retrieved from the [National Vulnerability Database (NVD)](https://nvd.nist.gov/) API.  
+**This product uses the NVD API but is not endorsed or certified by the NVD.**
+
+- NVD content is provided on an "as-is" and "as-available" basis by NIST.
+- Data returned by this SDK may be cached, normalized, or transformed before being exposed to clients.
+- Users of this SDK are responsible for supplying and managing their own NVD API key in accordance with the [NVD Terms of Use](https://nvd.nist.gov/developers).
+- Excessive use without caching may result in rate limiting or blocked access by NVD.
+- For enterprise-scale usage, consult NVD’s official guidance on mirroring or bulk data feeds.
+
 ### See more provided SDKs on ISO20022 and SWIFT MT [here](https://github.com/Payment-Components)
