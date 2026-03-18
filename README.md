@@ -1,10 +1,10 @@
-<a id="logo" href="https://www.paymentcomponents.com" title="Payment Components" target="_blank">
-    <img loading="lazy" src="https://i.postimg.cc/yN5TNy29/LOGO-HORIZONTAL2.png" alt="Payment Components">
+<a id="logo" href="https://www.aciworldwide.com" title="ACI Worldwide" target="_blank">
+    <img loading="lazy" width="557" height="60" alt="ACI Worldwide" src="https://github.com/user-attachments/assets/c96a7a2c-09a7-4ece-99a3-9c02ccc25846" />
 </a>
 
 # ISO20022 Message Validator Demo
 
-This project is part of the [FINaplo](https://finaplo.paymentcomponents.com) product and is here to demonstrate how our [SDK](https://finaplo.paymentcomponents.com/financial-messages) for SWIFT MX (ISO20022) Messages Validation works. 
+This project is part of the [FINaplo](https://finaplo.paymentcomponents.com) product and is here to demonstrate how our SDK for SWIFT MX (ISO20022) Messages Validation works. 
 For our demonstration we are going to use the demo SDK which can parse/validate/generate a pacs.002.001.XX message. 
 
 It's a simple maven project, you can download it and run it, with Java 1.8 or above.
